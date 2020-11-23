@@ -431,7 +431,7 @@ Please use this provision as intended and for guidance only should you find your
 
 \section{Zero-D Energy-balance model of the climate system}
 
-In this Section, you are going to create, and then use in a series of applications, a zero-D equilibrium global 'climate model' --  the  simplest representation of the energy-balance   of the Earth's climate that it is possible to make. The model assumes that the climate system is in balance, with no net gain or loss of energy, and hence that the energy absorbed from incoming (short-wave) solar radiation equals the (long-wave) radiative loss from the Earth's surface (or top-of-the-atmosphere) (Figure \ref{fig:ch8-blackbody}). The equations are outlined in the Box in the margin, and you'll need to rearrange them in terms of \(T\) (mean global surface temperature).
+In this Section, you are going to create, and then use in a series of applications, a zero-D equilibrium global 'climate model' --  the  simplest representation of the energy-balance   of the Earth's climate that it is possible to make. The model assumes that the climate system is always in balance, with no net gain or loss of energy, and hence that the energy absorbed from incoming (short-wave) solar radiation equals the (long-wave) radiative loss from the Earth's surface (or top-of-the-atmosphere) (Figure \ref{fig:ch8-blackbody}). The equations are outlined in the Box in the margin, and you'll need to rearrange them in terms of \(T\) (mean global surface temperature).
 
 \marginnote[-2.5in]{\begin{mdframed}[backgroundcolor=light-blue,roundcorner=10pt,leftmargin=1, rightmargin=1, innerleftmargin=5, innerrightmargin=5, innertopmargin=5,innerbottommargin=5, outerlinewidth=1, linecolor=gray!10]
 \textbf{Energy balance modelling (1)}
@@ -463,37 +463,43 @@ The sequence of work is as follows:
 
 \setlength{\itemindent}{-0.2in}
 
-\item [6.1.1] In this first Subsection ('\textit{The basic EBM}'), you'll  create a \textit{script} (\# \texttt{scr\_1\sidenote{This is not a suggested name of the \textbf{m-file}, but an ID to help you not get confused as to which script or function is being referred to in the text ...}}) \textbf{m-file} containing the Energy Balance Model (EBM), and test it.
+\item [2.1.1] In this first Subsection ('\textit{The basic EBM}'), you'll  create a \textit{script} (\# \texttt{scr\_1\sidenote{This is not a suggested name of the \textbf{m-file}, but an ID to help you not get confused as to which script or function is being referred to in the text ...}}) \textbf{m-file} containing the Energy Balance Model (EBM), and test it.
 
 \noindent (See Figure \ref{fig:ch8-schematic-scr1}.)
 
-\item [6.1.2] Next, you'll turn your EBM \textit{script} (\texttt{scr\_1}) into a \textit{function} (\texttt{fun\_1})\sidenote{\textbf{Once the EBM function has been created, you do not at any point edit it any further!}} -- passing in the solar constant and albedo as parameters, and returning the surface temperature. (And test it.)
+\item [2.1.2] Next, you'll turn your EBM \textit{script} (\texttt{scr\_1}) into a \textit{function} (\texttt{fun\_1})\sidenote{\textbf{Once the EBM function has been created, you do not at any point edit it any further!}} -- passing in the solar constant and albedo as parameters, and returning the surface temperature. (And test it.)
 
 \noindent (See Figure \ref{fig:ch8-schematic-fun1}.)
 
-\item [6.1.3] In the penultimate Subsection ('\textit{Calculating the evolution of the solar constant}'), you'll create a new function (\texttt{fun\_2}), which will take time (counted from the formation of the Sun) in \(Ga\), and return the value of the solar constant at that time (\(S(t)\) (\(Wm^{-2}\)) ).
+\item [2.1.3] In the penultimate Subsection ('\textit{Calculating the evolution of the solar constant}'), you'll create a new function (\texttt{fun\_2}), which will take time (counted forward from the time of formation of the Sun) in \(Ga\), and return the value of the solar constant at that time (\(S(t)\) (\(Wm^{-2}\)) ).
 
 \noindent (See Figure \ref{fig:ch8-schematic-fun2}.)
 
-And then ...
-
-\item [6.1.4] ... finally (Subsection '\textit{Evolution of Earth's surface temperature}'), you'll create one last script (\texttt{scr\_4}), with a \textit{loop} in time in it, and from within this \textit{loop}, you'll call first the solar constant \textit{function} (\texttt{fun\_2}), taking time as an input and returning the value of \(S_{(t)}\), which you will then pass into the EBM (\# \texttt{fun\_1}), returning the surface temperature at time t --  \(T_{(t)}\).
-
-\noindent (See Figure \ref{fig:ch8-schematic-scr4fun1fun2}.)
-
 \end{description}
 
-You can also take the EMBM function (now ignoring the solar constant function), and play some theoretical games with it in order to understand how sensitive global surface temperature is to key variables (solar constant and albedo):
+\noindent And then ...
 
 \begin{description}[align=right]
 
 \setlength{\itemindent}{-0.2in}
 
-\item [6.1.5] In the Subsection '\textit{Parameter sensitivity experiments using the EBM -- \#1}', you will create a new script (\texttt{scr\_2}) with a single loop in it. Within the loop, you will make a call to the EBM function (\# \texttt{fun\_1}) that you created.\sidenote{DO\ NOT put code the loops into the EBM function -- leave the function alone ...}
+\item [2.1.4] ... finally (Subsection '\textit{Evolution of Earth's surface temperature}'), you'll create one last script (\texttt{scr\_4}), with a \textit{loop} in time in it, and from within this \textit{loop}, you'll call first the solar constant \textit{function} (\texttt{fun\_2}), taking time as an input and returning the value of \(S_{(t)}\), which you will then pass into the EBM (\# \texttt{fun\_1}),  taking  the value of \(S_{(t)}\) as input (along with albedo) and returning the surface temperature at time t --  \(T_{(t)}\).
+
+\noindent (See Figure \ref{fig:ch8-schematic-scr4fun1fun2}.)
+
+\end{description}
+
+\newthought{\textbf{\textcolor{red}{OPTIONAL}} -- model parameter sensitivity / loop exercises:} \\\noindent You can also take the EMBM function (now ignoring the solar constant function), and play some theoretical games with it in order to understand how sensitive global surface temperature is to key variables (solar constant and albedo):
+
+\begin{description}[align=right]
+
+\setlength{\itemindent}{-0.2in}
+
+\item [2.1.5] In the Subsection '\textit{Parameter sensitivity experiments using the EBM -- \#1}', you will create a new script (\texttt{scr\_2}) with a single loop in it. Within the loop, you will make a call to the EBM function (\# \texttt{fun\_1}) that you created.\sidenote{DO\ NOT put code the loops into the EBM function -- leave the function alone ...}
 
 \noindent (See Figure \ref{fig:ch8-schematic-scr2fun1}.)
 
-\item [6.1.6] Then, in '\textit{Parameter sensitivity experiments using the EBM -- \#2}' -- an extension to the previous Subsection work, you will create another new script (\texttt{scr\_3}), this time  with a double (nested) loop in it. As before -- within the loop, you will make a call to the EBM function.
+\item [2.1.6] Then, in '\textit{Parameter sensitivity experiments using the EBM -- \#2}' -- an extension to the previous Subsection work, you will create another new script (\texttt{scr\_3}), this time  with a double (nested) loop in it. As before -- within the loop, you will make a call to the EBM function.
 Note that there is going to something of a diversion in this Subsection that will further help illustrate nested loops for you.
 
 \noindent (See Figure \ref{fig:ch8-schematic-scr3fun1}.)
@@ -539,31 +545,40 @@ You can then  write:
 \(\frac{(1-\alpha) \cdot S}{4} = \epsilon \cdot \sigma \cdot T^{4}\)
 \end{docspecnormal}
 
-This equation now needs to be re-arranged in terms of \(T\).
+\noindent You  task is then to re-arrange this equation in terms of \(T\) -- do this first \uline{on paper} before worrying about any code.
 
-How to write the math down as \textbf{MATLAB} code? For the first part, we could e.g. write:
+\newpage
+
+\noindent How to write the math down as \textbf{MATLAB} code? For the first part (\(F_{in}\)), we could e.g. write:
 \begin{docspec}
 Fin = ((1-albedo)*solar\_constant)/4;
 \end{docspec}
-and pretty well much as you would write as math. Here, \texttt{albedo} and \texttt{solar\_constant} are variables holding the values of planetary albedo and solar constant, and the result of the calculation is assigned to a variable \texttt{Fin}. For completeness, you would define these values, e.g.
+This pretty well much as you would write as math (on paper) with the exception of the variables having much longer names than you would typically use in math (where often Greek characters, with or without sub- or super-scripts, are used). Here, \texttt{albedo} and \texttt{solar\_constant} are variables holding the values of planetary albedo and solar constant, and the result of the calculation is assigned to a variable \texttt{Fin}. For completeness, you would define these values, e.g.
 \begin{docspec}
-albedo = 0.3;\\
-solar\_constant\ = 1368.0;\\
-Fin = ((1-albedo)*S)/4;
+albedo = 0.3; \textcolor[rgb]{0,0.501961,0}{\% initial albedo assumption}\\
+solar\_constant\ = 1368.0; \textcolor[rgb]{0,0.501961,0}{\% set modern solar constant}\\
+Fin = ((1-albedo)*solar\_constant)/4; \textcolor[rgb]{0,0.501961,0}{\% energy in}
 \end{docspec}
+(and you might add to the comments, to include the units for each variable).
 
-For writing out the \(F_{out}\) part of the equation in code, you will need to find (from the Internet?) the value of the (Stefan-Boltzmann) constant. When you have found this, assign this value\footnote{Obviously, in this example, this is NOT the actual value ...} to a variable, e.g.
+\noindent For writing out the \(F_{out}\) part of the equation in code, you will need to find (from the Internet?) the value of the (Stefan-Boltzmann) constant. When you have found this, assign this value\footnote{Obviously, in this example, this is NOT the actual value ...} to a variable, e.g.
 \begin{docspec}
 sb\_constant = 9.9999E19;
 \end{docspec}
 
-\noindent ... and you will need to be careful with units of this. Use a 'dimension' check to see if you have the units correct. In the equation:
+\noindent ... and \uline{you will need to be careful with units of this} (Wikipedia, for example, will provide the Stefan-Boltzmann in a variety of units). Use a 'dimension' check to see if you have the units correct. This works as follows:
+
+In the equation:
 \begin{docspecnormal}
 \(F_{out} = \epsilon \cdot \sigma \cdot T^{4}\)
 \end{docspecnormal}
--- on the left hand side we have units of \(W m^{-2}\), and on the right hand side \(\epsilon\), the emissivity, is dimensionless, and \(T^{4}\) has units of ... \(K^{4}\). The Stefan-Boltzmann constant must be in units that balance this, i.e. \(W m^{-2} K^{-4}\).
+-- on the left hand side we have units of \(W m^{-2}\), and on the right hand side \(\epsilon\), the emissivity, is dimensionless, and \(T^{4}\) has units of ... \(K^{4}\). The Stefan-Boltzmann constant, \(\sigma\), must be in units that balance this, i.e. \(W m^{-2} K^{-4}\), such that:
+\begin{docspecnormal}
+\(W m^{-2} == [] \cdot\ W m^{-2} K^{-4} \cdot\ T^{4}\)
+\end{docspecnormal}
+(where \([]\) is indicating no dimension (units) for \(\epsilon\)).
 
-Also note in the context of the Stefan-Boltzmann constant, how scientific notation (floating point) numbers are dealt with in \textbf{MATLAB}. For example, while in normals maths speak, you might write:
+Also note in the context of the Stefan-Boltzmann constant, \(\sigma\), how scientific notation (floating point) numbers are dealt with in \textbf{MATLAB}. For example, while in normals maths speak, you might write:
 \begin{docspecnormal}
 \(x = 9.9999\times 10^{19}\)
 \end{docspecnormal}
@@ -571,10 +586,11 @@ in \textbf{MATLAB} you would write:
 \begin{docspec}
 x = 9.9999E19
 \end{docspec}
-although, you could also write this out long-hand and more like maths speak if you prefer, e.g.
+although, you could also write this out long-hand and more like the maths speak version \(x = 9.9999\times 10^{19}\), if you prefer, e.g.
 \begin{docspec}
 x = 9.9999*10\(^{\wedge}\)19
 \end{docspec}
+(There are equivalent representations, although the 1st one is more compact and hence less prone to errors (bugs).)
 
 \begin{marginfigure}[0.0in]
 \includegraphics[width=\linewidth]{ch8-schematic-scr1.eps}
@@ -582,30 +598,38 @@ x = 9.9999*10\(^{\wedge}\)19
 \label{fig:ch8-schematic-scr1}
 \end{marginfigure}
 
-For now -- prescribe the value of \(S\) (variable: \texttt{solar\_constant}) -- for which the modern value is 1368 Wm\(^{-2}\) (\(S_{0}\)) as well as the value of surface albedo (\(\alpha=0.3\), variable: \texttt{albedo}) -- somewhere near the start of the program (see Figure \ref{fig:ch8-schematic-scr1}). Then run it.
+For now -- prescribe the value of \(S\) (variable: \texttt{solar\_constant}) -- for which the modern value is 1368 Wm\(^{-2}\) (\(S_{0}\)) as well as the value of planetary albedo (\(\alpha=0.3\), variable: \texttt{albedo}) -- somewhere near the start of the program (see Figure \ref{fig:ch8-schematic-scr1}).
 
-If you found a reasonable value for the solar constant, and did not screw-up the units on the Stefan-Boltzmann constant, then you should have an equilibrium (global, annual mean) surface temperature of around 14\degree C\sidenote{Remembering to convert from Kelvin (\(K\)) to degrees Centigrade (\degree C). In the equation you have re-arranged, \(T\) is in units of Kelvin (\(K\)).} ... If not -- debug. Assuming that the code ran without errors but gave a nutty answer:
+\vspace{1mm}
+\noindent\rule{4cm}{0.5pt}
+\vspace{2mm}
+
+\noindent Now run it.
+
+If you did not screw-up the units on the Stefan-Boltzmann constant, then you should have an equilibrium (global, annual mean) surface temperature of around 14\degree C\sidenote{Remembering to convert from Kelvin (\(K\)) to degrees Centigrade (\degree C). In the equation you have re-arranged, \(T\) is in units of Kelvin (\(K\)).} ... If not -- debug. Assuming that the code ran without errors but gave a nutty answer, try the following fault-finding sequence:
 \begin{enumerate}[noitemsep]
 \setlength{\itemindent}{.2in}
-\item Check that the units are correct.
+\item Check that the units are correct!!!
 \item Check that the equation has been re-arranged correctly -- a common source of errors is incorrect placement of parentheses ... or not placing parentheses around multiple variables you are divining something all by.
 \\ If it helps you to avoid confusion and potential errors and bugs by breaking down calculations into multiple steps using temporary/intermediate variables and partial calculations ... then do it!
 \item If still 'no' -- maybe take the 2 component equations (for \(F_{in}\) and \(F_{out}\)), plug \(S\) into the equation for \(F_{in}\) and then play with different values of \(T\) to find a value for \(F_{out}\) that is approximately equal -- is the value for \(T\) sane? If not, double-check the units and values in both component equations.
 \end{enumerate} 
 
-Once it is working, have a quick play about, changing the value of \(S\) and albedo (\(\alpha\)) (saving the \textbf{m-file} each time and re-running) to get a vague feel for how sensitive the surface temperature is to these two parameters.
+\noindent Once it is working, have a quick play about, changing the value of \(S\) and albedo (\(\alpha\)) (saving the \textbf{m-file} each time and re-running) to get a vague feel for how sensitive the surface temperature is to these two parameters.
+
+\newpage 
 
 %------------------------------------------------
 
 \subsection{The EBM as a function}
 
-\begin{marginfigure}[-0.0in]
+\begin{marginfigure}[0.125in]
 \includegraphics[width=\linewidth]{ch8-schematic-fun1.eps}
 \caption{Form of the basic EBM model as a \textit{function}.}
 \label{fig:ch8-schematic-fun1}
 \end{marginfigure}
 
-We'll now make your model mode flexible so that it can be applied to the subsequent Examples. So -- turn it into a \textit{function}\sidenote[][0.25in]{
+We'll now make your model more flexible so that it can be applied to the subsequent Examples. So -- turn it into a \textit{function}\sidenote[][0.25in]{
 Refer to earlier in the text and also \textbf{help} on the required structure/syntax of a \textit{function}. Recall the basic structure of a function \textbf{m-file}, has as its \uline{VERY\ FIRST\ LINE}:
 \begin{docspecmargin}
 \textcolor{blue}{function} [OUT] = ... 
@@ -625,7 +649,7 @@ where \texttt{OUT} represents one (or more) variables that are passed out (the '
 \item[] \(T \rightarrow\) \texttt{temp}
 \end{itemize}
 (or whatever you like, as long as the names help you in the coding and debugging).
-Or if you prefer -- create a new (empty) \textit{function} (select \textsf{New} and then \textsf{Function} from the \textbf{MATLAB} toolbar/menu-bar) and then copy-paste in the contents of \textsf{scr\_1.m}. Note that in the \textit{function}, you no longer define yourself the values for \texttt{solar\_constant} and \texttt{albedo} in the \textbf{m-file} -- instead, these values are passed into the \textit{function} when you call it. For instance, if at the top of the \textit{function} (see side-note) you  defined:
+Or if you prefer -- create a new (empty) \textit{function} (select \textsf{New} and then \textsf{Function} from the \textbf{MATLAB} toolbar/menu-bar) and then copy-paste in the contents of \textsf{scr\_1.m}. Note that in your new \textit{function} version of the program, you no longer define  the values for \texttt{solar\_constant} and \texttt{albedo} in the \textbf{m-file} -- instead, these values are passed into the \textit{function} when you call it. For instance, if at the top of the \textit{function} (see side-note) you  defined:
 \begin{docspec}
 \textcolor{blue}{function} [temp] = fun\_1(solar\_constant, albedo)
 \end{docspec}
@@ -633,25 +657,19 @@ then when you call the \textit{function}  at the command line:
 \begin{docspecbold}
 >> fun\_1(1368.0,0.3)
 \end{docspecbold}
-you are passing in the value \(1368\) -- assigned to the variable solar\_constant (in \textsf{fun\_1.m}), and the value \(0.3\) --  assigned to the second variable in the \textit{function} definition (\texttt{albedo}). The \textit{function} then returns whatever value you have calculated and assigned to the variable \texttt{temp}, back to you (and which then appears at the command line).
+you are passing in the value \(1368\) (\(Wm^{-2}\)) -- assigned to the variable \texttt{solar\_constant} (in \textsf{fun\_1.m}), and the value \(0.3\) (dimensionless) --  assigned to the second variable in the \textit{function} definition (\texttt{albedo}). The \textit{function} then returns whatever value you have calculated and assigned to the variable \texttt{temp}, back to you (and which then appears at the command line).
 
 Try playing with the \textit{function} in the same way as before, but now passing the different values of \(S\) and \(\alpha\) (rather than having to edit the \textsf{m-file}, save, and re-run each time). To use the \textit{function} (assuming you called it e.g. \texttt{fun\_1}), and assuming the 2 passed parameters are in the order: \(S\), \(\alpha\) and are given their default values, you'd write (at the command line):
 \begin{docspecbold}
->> temp = fun\_1(1368.0,0.3)
+>> temp = fun\_1(1368.0,0.3);
 \end{docspecbold}
-(and get a value close to 14\degree C returned, and if not -- debug it ...).
+(and get a value close to 14\degree C returned and assigned to the variable \texttt{temp}, and if not -- debug it ...).
 
 %------------------------------------------------
 
-\begin{marginfigure}[0.5in]
-\includegraphics[width=\linewidth]{ch8-schematic-fun2.eps}
-\caption{Schematic structure of code for calculating the solar constant (output) as a function of time (input).}
-\label{fig:ch8-schematic-fun2}
-\end{marginfigure}
-
 \subsection{Creating a function for the evolution of solar constant through geological time}
 
-In this  sub-subsection, as a precursor to simulating how Earths surface temperature may have changed through geological time, you are going to code up a new \textit{function} that calculates (and returns) the value of the solar constant as a function of time.
+In this  sub-subsection, and as a precursor to simulating how Earths surface temperature may have changed through geological time, you are going to code up a new \textit{function} that calculates (and returns) the value of the solar constant as a function of time.
 
 So far you only have a function equating solar constant (\(S\)) to temperature (\(T\)). What you need is some way of equating time (\(t\)) to the value of the solar constant at that time \(S_{(t)}\) (which you can then turn into temperature). We'll remedy this toot sweet.
 
@@ -659,8 +677,9 @@ Start by creating a new  (blank) \textbf{m-file} and define it as a \textit{func
 \begin{docspec}
 \textcolor{blue}{function} [St] = fun\_2(t)
 \end{docspec}
+where now I am shortening the variable name for the solar constant (to '\texttt{S}') and then adding a '\texttt{t}' to remind me that it is a time-dependent value (hence \texttt{St} rather than e.g. \texttt{solar\_constant\_time}). The code structure you are aiming for is illustrated in Figure \ref{fig:ch8-schematic-fun2}.
 
-\marginnote[-2.5in]{\begin{mdframed}[backgroundcolor=light-blue, roundcorner=10pt,leftmargin=1, rightmargin=1, innerleftmargin=5, innerrightmargin=5, innertopmargin=5,innerbottommargin=5, outerlinewidth=1, linecolor=light-gray]
+\marginnote[-3.875in]{\begin{mdframed}[backgroundcolor=light-blue, roundcorner=10pt,leftmargin=1, rightmargin=1, innerleftmargin=5, innerrightmargin=5, innertopmargin=5,innerbottommargin=5, outerlinewidth=1, linecolor=light-gray]
 \textbf{Solar constant}
 \\The long-term evolution of solar luminosity \(L_{t}\) as a function of time \(t\) can be approximated [\textit{Gough} [1981]; \textit{Feulner} [2012]) by:
 \begin{docspeclarge}
@@ -680,59 +699,83 @@ Note that in the formula, \(t\) is counted (in Gyr) relative to the formation of
 \\The reference value of \(S\): \(S_{0}=1368\) Wm\(^{-2}\).
 \end{mdframed}}
 
+\begin{marginfigure}[0.0in]
+\includegraphics[width=\linewidth]{ch8-schematic-fun2.eps}
+\caption{Schematic structure of code for calculating the solar constant (output) as a function of time (input).}
+\label{fig:ch8-schematic-fun2}
+\end{marginfigure}
+
 The background to the equation that will go into your function is given in the Solar constant Box. In this, you'll first need to substitute the modern value of the solar constant (\(S_{(t=0)}\) or \(S_{0}\)) into the equation to leave it in terms of \(S_{(t)}\) (the solar constant value at time \(t\)).
  
-Your function, aside from the all-important 1st line (and \textcolor{blue}{\texttt{end}} at the end) and appropriate \textcolor[rgb]{0,0.501961,0.25098}{\texttt{\% comments}}, need have little more in than a definition for any constant you might want to use, such as the modern value of \(S_{(t=0)}\) and perhaps the reference time\sidenote[][0.0in]{Which is also equal to the current time (since the formation of the Sun).} (\(t_{0}\)) (4.57 Ga) ... and a single line for the equation giving the value of \(S_{(t)}\):
+Your function, aside from the all-important 1st line (and \textcolor{blue}{\texttt{end}} at the end) and appropriate \textcolor[rgb]{0,0.501961,0.25098}{\texttt{\% comments}}, need have little more in than a definition for any constant you might want to use, such as the modern value of \(S_{(t=0)}\) and perhaps the reference time\sidenote[][0.0in]{Which is also equal to the current time (since the formation of the Sun).} (\(t_{0}\)) (4.57 Ga) ... followed by a single line for the equation giving the value of \(S_{(t)}\):
 \begin{docspeclarge}
 \(S_{(t)} = \frac{S_{0}}{1+\frac{2}{5}\cdot (1-\frac{t}{t_{0}})}\)
 \end{docspeclarge} 
 
-As before -- convert this into \textbf{MATLAB} code. You could either create parameters (variables) containing the values of \(S_{0}\) and \(t_{0}\), or plug them directly into the code. For the former, translating the equation into \textbf{MATLAB} might look like this:
+As before -- your primary task is to convert this equation into \textbf{MATLAB} code. 
+
+To do this, you could either create parameters (variables) containing the values of \(S_{0}\) and \(t_{0}\) (better), e.g.
 \begin{docspec}
 ref\_S0 = 1368.0;\\
 ref\_t = 4.57;\\
-St = ref\_S0 / ( 1 + (2/5)*(1-(t/ref\_t)) )
 \end{docspec}
-Here, the value of \texttt{t} used in the equation is passed in as per defined in the \textit{function} header (see above). The result of the equation -- the value of the solar constant at that time, is assigned to the variable \texttt{St} and passed out as the result of the function (again, as per the function definition/header).
+and use the variable names in the code in place of actual (constant) values, e.g.:
+\begin{docspec}
+St = ref\_S0 / ...
+\end{docspec}
+or (less good from a programming perspective), plug them directly into the code, e.g.
+\begin{docspec}
+St = 1368.0 / ...
+\end{docspec}
+Regardless of which approach you take, remember that the variable \texttt{t} that is is passed in as per defined in the \textit{function} header (see above), will need to appear in your equation.
+
+The result of the equation -- the value of the solar constant at that time, is then assigned to the variable \texttt{St} and passed out as the result of the function (again, as per the function definition/header).
 
 In the code and in general -- use as many pairs of (nested) parentheses as you need to help make the equation clear. You can also use spaces to help make it clearer which end parenthesis corresponds to which opening parenthesis
 
-When you think you have done this -- check it -- plug in values of time into your function, i.e.
+When you think you have done this -- check it -- plug in some values of time into your function, i.e.
 \begin{docspecbold}
->> St = fun\_2(4.57)
+>> St = fun\_2(4.57);
 \end{docspecbold}
-for passing the time now into a \textit{function} called '\texttt{fun\_2}' in the on-going notation (which in this example should return a value of \(1368\) (\(Wm^{-2}\))).
+In this example, should return a value of \(1368\) (\(Wm^{-2}\)) which is assigned to the variable \texttt{St}.
 
-As a little test -- see if you can adjust your \uline{function} so that rather than passing in time, measured since the formation of the Sun, you pass in time relative to now (i.e. \texttt{>> fun\_2(0.0)} would then give you a value of \(1368\)).
-Hint: the time used in the equation, must be as Gyr following the formation of the sun, but the value you are passing in, has had a value of 4.57 (Ga) removed from it to make it relative to now. Hence, before the calculation in the function, you need ot add this value back to the time variable passed in, to make it absolute rather than relative time again.
+\vspace{1mm}
+\noindent\rule{4cm}{0.5pt}
+\vspace{-2mm}
+
+\newthought{\textbf{\textcolor{red}{OPTIONAL}} -- As a test --} see if you can adjust your \textit{function} (but save it under a different/new name so as to retain a copy of the original) so that rather than passing in time, measured since the formation of the Sun, you pass in time relative to now (i.e. \texttt{>> fun\_2(0.0)} would then give you a value of \(1368\)).
+Hint: the time used in the equation, must be as Gyr following the formation of the sun, but the value you are passing in, has had a value of 4.57 (Ga) removed from it to make it relative to now. Hence, before the calculation in the \textit{function}, you need to add this value back to the time variable passed in, to make it absolute rather than relative time again.
 
 %------------------------------------------------
 
-\subsection{Using multiple functions and calculating global surface temperature as a function of geological time}
+\subsection{Putting it all together -- using multiple functions to calculate global surface temperature as a function of geological time}
 
-Finally ... you are going to bring it all together, and calculate and then at the end (of the program) plot,  the surface temperature of the Earth, at 100 Myr intervals, and spanning approximately the age of the Earth and much of its potential long-term future.
+Finally ... you are going to bring it all together and plot the evolution of the surface temperature of the Earth, at 100 Myr intervals,  spanning approximately the age of the Earth and much of its potential long-term future.
 
 Start by creating a new (yet another blank \textbf{m-file}) \textit{script} ('\texttt{scr\_4}')\footnote{The structure of the overall program is shown in  Figure \ref{fig:ch8-schematic-scr4fun1fun2}.}. You are going to need a loop in time (e.g. with the variable name \texttt{t}), perhaps looping from 0.0 (the age of formation of the Sun) to 10.0 Ga (with the step size being 0.1 Ga). \uline{Within the time loop}, you will:
 
 \begin{enumerate}[noitemsep]
 \setlength{\itemindent}{.2in}
+\vspace{1mm}
 \item Pass to your solar constant \textit{function} (\texttt{fun\_2.m}) your  variable containing the current value of time (\texttt{t}), and obtain the corresponding value of the solar constant (\(S_{(t)}\)), and assign to a variable e.g. \texttt{St}.
 \\Note that you do not copy-paste the \textsf{fun\_2.m} code into \textsf{scr\_4.m} ... you simply call the \textit{function} within the loop exactly as per you did at the command line (but assign the result to a variable), e.g.
 \begin{docspec}
 St = fun\_2(t);
 \end{docspec}
 (NOTE: The summary figure (Figure \ref{fig:ch8-schematic-scr4fun1fun2}) is intended to indicate the flow of information (variable values) and relationship between the \textit{script} and two \textit{functions} \textbf{m-files}, rather than that the code for the 2 functions should be embedded (which it should not) within the actual \textit{script} file itself ...)
+\vspace{1mm}
 \item  Call your zeroD EBM \textit{function} (\texttt{fun\_1.m}) to calculate the corresponding surface temperature, passing it the value of \(S_{(t)}\) that you have just calculated and assigning the result to  e.g. \texttt{temp}:
 \begin{docspec}
 temp = fun\_1(St,albedo);
 \end{docspec}
 (or simply replace \texttt{albedo} with a fixed value, e.g. 0.3).
+\vspace{1mm}
 \item Store in an array, or pairs of vectors, the current time in the loop alongside the corresponding value of \(T\). For hints on the various different possibilities in doing this see earlier in the text, but you might e.g. do something like:
 \begin{docspec}
 vt = [vt t];\\
 vtemp = [vtemp temp];
 \end{docspec}
-(having first (before the loop) initialized these vectors as empty, e.g. \texttt{vt=[];} and \texttt{vtemp=[];}).
+(having first (before the loop) initialized these vectors as empty, e.g. \texttt{vt=[];} and \texttt{vtemp=[];}), which will append the current time to  vector\texttt{vt}, and at the same row number, the current temperature to vector \texttt{vtmp}.
 \end{enumerate}
 \vspace{-1mm}
 Once the loop has completed, plot surface temperature (\textit{y}-axis) as a function of time (\textit{x}-axis).
@@ -743,9 +786,9 @@ Once the loop has completed, plot surface temperature (\textit{y}-axis) as a fun
 \label{fig:ch8-schematic-scr4fun1fun2}
 \end{marginfigure}
 
-Likely bug possibilities include mistakes with nested parentheses \texttt{(())}, units (e.g. \(K\) vs. \(\degree C\)), and time, which for now should run forward from zero (the formation of the Sun). A schematic of the program structure is shown in Figure \ref{fig:ch8-schematic-scr4fun1fun2} to aid you.
+Likely bug possibilities include mistakes with nested parentheses \texttt{(())}, units (e.g. \(K\) vs. \(\degree C\)), and time, which  should run forward from zero (the formation of the Sun). A schematic of the program structure is shown in Figure \ref{fig:ch8-schematic-scr4fun1fun2} to aid you.
 
-Assuming that you have managed something like Figure \ref{fig:ch8-ebm-solarconst}\sidenote[][-0.0in]{Note that a line has been added to highlight \(t=0\) (i.e. the present-day) -- see \docenv{line} (see earlier). This plot also has an altered time-axis and time is plotted relative to now -- see below.} -- what strikes you, in light of (hopefully) what you know about the past history of climate and evolution of life on this planet, about your model projection (for the past)? What is 'missing'?
+Assuming that you have managed something like Figure \ref{fig:ch8-ebm-solarconst}\sidenote[][-1.0in]{Note that a line has been added to highlight \(t=0\) (i.e. the present-day) -- see \docenv{line} (see earlier). This plot also has an altered time-axis and time is plotted relative to now -- see below.} -- what strikes you, in light of (hopefully) what you know about the past history of climate and evolution of life on this planet, about your model projection (for the past)? What is 'missing'?
 
 \begin{marginfigure}[-0.0in]
 \includegraphics[width=\linewidth]{ch8-ebm-solarconst.eps}
@@ -759,7 +802,7 @@ As an additional step and noting that the time-scale is not entirely helpful in 
 \vspace{-0mm}
 \item Draw on a vertical line (\texttt{hold on}) at 4.57 ('now', relative to the time of formation of the Sun).
 \vspace{-1mm}
-\item Transform the \textit{x}-axis time scale to time relative to now. 
+\item Transform the \textit{x}-axis time scale to \uline{time relative to now} (as shown in Figure \ref{fig:ch8-schematic-scr4fun1fun2}). 
 \\To do this -- as you loop through time relative to the formation of the Sun, when you save the current time for plotting, you could subtract 4.57 from the loop value before passing it to \texttt{fun\_2.m}.
 \vspace{-1mm}
 \item Or ... you could save the time as given in the loop, but transform the \textit{x}-axis time scale to time relative to now by subtracting a value of 4.57 when you come to \texttt{plot} it, e.g.:
@@ -771,7 +814,7 @@ or more explicitly so you can see what is going on:
 >> plot((x(:)-4.57),y(:));
 \end{docspec}\vspace{-1mm}
 \end{enumerate}
-Note that you do not have to plot the entire dataset and could set the x-axis limits to e.g. \(-4 \rightarrow\ +4\) Gyr relative to present.
+Note that you do not have to plot the entire dataset and could set the x-axis limits to e.g. \(-4 \rightarrow\ +4\) Gyr relative to present (again as per the example in Figure \ref{fig:ch8-schematic-scr4fun1fun2})..
 
 %------------------------------------------------
 %------------------------------------------------
@@ -791,7 +834,7 @@ T = fun\_1(S,a);
 \end{docspecmargin}assigns the result of your temperature calculation to the variable \texttt{T}.}. So far so boring, as this is in effect what you had been doing previously in 'playing' with the energy balance function. 
 
 
-Starting with a simple 1-D case and considering just a progressive change in the value of \(S\), to automatically generate a progression of different values of \(S\) and call the \textit{function}, you are going to need to create a loop\sidenote{You are going to put the loop in the script (\# \texttt{scr\_2}), NOT the function (\# \texttt{fun\_1}).
+Starting with a simple 1-D case and considering  a progression of different values of \(S\), you are going to need to create a loop\sidenote{You are going to put the loop in the script (\# \texttt{scr\_2}), NOT the function (\# \texttt{fun\_1}).
 
 \textbf{An entire plane of Hell is reserved for anyone coding the loop in the function.}
 }. There are two/three ways of constructing the loop\sidenote{In both cases a \texttt{for ...} loop.}:
@@ -927,7 +970,7 @@ i.e. concatenating a vector \texttt{[S T]}  (and hence a complete row) to the en
 
 Pick one of these (i.e. a way of saving a pair of values each time around the loop) and code it up (or better, try all of them in turn!).
 
-Finally, at the end of your program (after the end of the loop), you can now plot (\texttt{plot} or \texttt{scatter}) how \(T\) varies as a function of \(S_{0}\), having saved all the values of \(S\) you tested, plus the corresponding calculated temperatures, in a handy matrix (or pair of vectors). Note that regardless of whether you use \texttt{plot} or \texttt{scatter}, you need to specify to \textbf{MATLAB} that you want the values in the 2nd column of the array (\textit{y}-axis), plotted against the first column (\textit{x}-axis).\sidenote[][-0.0in]{Refer back to the earlier chapters on plotting of e.g. the CO2 or global temperature data you analysed, and also recall how to specify e.g. all the rows in the first column of an array.}
+Finally, at the end of your program (after the end of the loop), you can now plot (\texttt{plot} or \texttt{scatter}) how \(T\) varies as a function of \(S_{0}\), having saved all the values of \(S\) you tested, plus the corresponding calculated temperatures, in a handy matrix (or pair of vectors).
 
 The structure of your code should look like Figure \ref{fig:ch8-schematic-scr2fun1}. and your resulting figure (depending on the range you assume for \(S\)), something like Figure \ref{fig:ch8-sens1D}.
 
@@ -935,7 +978,7 @@ The structure of your code should look like Figure \ref{fig:ch8-schematic-scr2fu
 
 \subsection{Parameter sensitivity experiments using the EBM -- \#2}
 
-In this final sub-subsection, we'll extend the parameter sensitivity analysis of your model to 2D, assuming for instance that you are  now interested in  how \(T\) also varies both as a function of solar constant as well as, as a function of \(\alpha\) (surface albedo). You'll need to vary both \(S\) and \(\alpha\), and in all combinations of the two in order to achieve this. In fact, you'll do this in a grid pattern, with \(S\) increasing in steps on one axis (as before), and \(\alpha\) on the other.
+In this final sub-subsection, we'll extend the parameter sensitivity analysis of your model to 2D, assuming for instance that you are  now interested in  how \(T\)  varies both as a function of solar constant as well as, as a function of \(\alpha\) (surface albedo). You'll need to vary both \(S\) and \(\alpha\), and in all combinations of the two in order to achieve this. In fact, you'll do this in a grid pattern, with \(S\) increasing in steps on one axis (as before), and \(\alpha\) on the other.
 
 \begin{marginfigure}[-0.0in]
 \includegraphics[width=\linewidth]{ch8-sens1D.eps}
@@ -955,7 +998,7 @@ Hopefully, you might have guessed that you'll need a \textit{nested loop}(?) -- 
 \pagebreak
 
 Start with a new (script) \textbf{m-file} ('\texttt{scr\_3}'). For constructing the loop -- you have already seen the 1D example of parameter sensitivity code, and also an example of creating a nested loop for a 2D grid. Chose whether to use counters (e.g. \texttt{n} and \texttt{m}) in the \texttt{for} loops and then derive the values of  \(S\) and \(\alpha\)
-from these counters, 
+from these counters (better), 
  or loop through the values of  \(S\) and \(\alpha\)
 directly and create counters (as per for the 1D case).
  Call your \textit{function} (\texttt{fun\_1}) for solving the global surface temperature within the innermost loop (passing it the values of \(S\) and \(\alpha\) generated in the loop). A schematic of the program structure is shown in Figure \ref{fig:ch8-schematic-scr3fun1}.
