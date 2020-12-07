@@ -1470,7 +1470,9 @@ Consider the radioactive decay of an amount of radioactive substance. Assume an 
 
 This simply says: the rate of change in \(A\) with time (days), is equal to minus (because it is decaying rather than growing) \(0.5\) times its value.
 
-We could also write this:
+\newpage 
+
+\noindent We could also write this:
 
 \vspace{2mm}\(
 \frac{\partial A}{\partial t} = \frac{A(t+\Delta t)-A(t)}{\Delta t} + O(\Delta t^{2})
@@ -1494,7 +1496,7 @@ A(t+\Delta t) \approx\ A(t) -0.5\cdot A(t) \cdot \Delta t
 A(t+\Delta t) \approx\ A(t)\cdot(1.0-0.5\cdot \Delta t)
 \)\vspace{2mm}
 
-If, in code, we represent the time-step \(\Delta t\) by \texttt{dt}, we have:
+\noindent If, in code, we represent the time-step \(\Delta t\) by \texttt{dt}, we have:
 \begin{docspec}
 A = A*(1-0.5*dt);
 \end{docspec}
@@ -1505,7 +1507,7 @@ A(1) = 1.0;\\
 time(1) = 0.0;\\
 \textcolor{blue}{for} n=1:100,\\
 \ \ \ A(n+1) = A(n)*(1-0.5*dt);\\
-\ \ \ time(n+1) = n*dt;\\
+\ \ \ time(n+1) = time(n) + dt;\\
 \textcolor{blue}{end}
 \end{docspec}
 or if you prefer:
@@ -1513,18 +1515,25 @@ or if you prefer:
 dt = 1.0;\\
 A(1) = 1.0;\\
 time(1) = 0.0;\\
-n = 1;
+n = 1;\\
 \textcolor{blue}{for} t=dt:dt:100*dt,\\
 \ \ \ n = n+1;\\
 \ \ \ A(n+1) = A(n)*(1-0.5*dt);\\
 \ \ \ time(n+1) = t;\\
 \textcolor{blue}{end}
 \end{docspec}
-(these codes are equivalent -- in the first, you loop with a  counter, and then have to derive actual time, and in the second, you loop in time, but then have to keep a counter in order to index the output data arrays).
+These codes are equivalent -- in the first, you loop with a  counter, and then have to derive actual time, and in the second, you loop in time, but then have to keep a counter in order to index the output data arrays. Note that in the first code, the notation:
+\begin{docspec}
+time(n+1) = time(n) + dt;
+\end{docspec}
+is equivalent to the notation:
+\begin{docspec}
+time = [time dt];
+\end{docspec}
 
-Try both out and explore different values of \texttt{dt} (\(\Delta t\)).
+\noindent Try both out and explore different values of \texttt{dt} (\(\Delta t\)). Also add a plot of the results arrays.
 
-Also add a plot of the results arrays. And try coding the results output in the form of a single matrix, rather than 2 vectors. For this, rather than create the array (of zeros) of the correct size at the start, try something like the following:
+You could also try coding the results output in the form of a single matrix, rather than 2 vectors. For this, rather than create the array (of zeros) of the correct size at the start, try something like the following:
 \begin{docspec}
 dt = 1.0;\\
 data(1,1) = 0.0;\\
@@ -1532,10 +1541,10 @@ data(1,2) = 1.0;\\
 n = 1;\\
 \textcolor{blue}{for} t=dt:dt:100*dt,\\
 \ \ \ n = n+1;\\
-\ \ \ data(n,:) = [t ( data(n-1,2)*(1-0.5*dt) )];\\
+\ \ \ data(n,:) = [t data(n-1,2)*(1-0.5*dt)];\\
 \textcolor{blue}{end}
 \end{docspec}
-where the first column of \texttt{data} is time, and the second is the activity.
+where the first column of \texttt{data} is time, and the second is the activity. Here, you are adding a 2-element vector (\small\texttt{[t data(n-1,2)*(1-0.5*dt)]}\normalsize) to the \(nth\) row of of the array \texttt{data}.
 
 %------------------------------------------------
 
@@ -1606,7 +1615,7 @@ To simply things and the construction of the code and encapsulation of the physi
 \noindent\rule{4cm}{0.5pt}
 \vspace{-2mm}
 
-\begin{marginfigure}[-0.0in]
+\begin{marginfigure}[3.0in]
 \includegraphics[width=\linewidth]{ch9-schematic-ball_u.eps}
 \caption{Schematic of the code for simulating the horizontal movement of a ball.}
 \label{fig:ch9-schematic-ball_u}
@@ -1614,23 +1623,33 @@ To simply things and the construction of the code and encapsulation of the physi
 
 \newthought{\textit{\textbf{Part I }}} Start with a new \textsf{m-file} (which can be a simple \textit{script} file). For the structure of the code -- Figure \ref{fig:ch9-schematic-ball_u} is given as an example to guide you. 
 
-First, you are going to need to define some constants (\(g\)), parameters (the initial height \(h_{0}\), initial speed (\(s_{0}\)), initial angle (\(\theta\)) of the ball). So you might start off (after having added some comments to summarize that the program will do), with:
+First, you are going to need to define a constant (\(g\)) -- the value for gravitational acceleration on Earth. (Here it is termed a 'constant', because its value never changes. The value of \(\pi\) would be another example, although \textbf{MATLAB} provides this as a function return.):
+\begin{docspec}
+\textcolor[rgb]{0,0.501961,0}{\% model constants}\\
+g = 9.81; \textcolor[rgb]{0,0.501961,0}{\% gravitational acceleration (ms-2)}
+\end{docspec}
+
+Next, your program needs some parameters (the initial height \(h_{0}\), initial speed (\(s_{0}\)), initial angle (\(\theta\)) of the ball). (These are called parameters because they are invariant during the running of the program, but may be changed if the program is run again.):
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% model parameter values}\\
-h0 = 0.0;\\
-s0 = 0.0;\\
-theta0 = 0.0;
+h0 = 1.0;\\
+s0 = ...\\
+theta0 = ...;
 \end{docspec}
-(Adding comments for what the parameters are (and ideally their units too).) We'll change these to non-zero values later ...
+(You might add comments for what the parameters are at the end of the line, and ideally include their units too.)
 
-Then, because you are going to use a time-stepping approach (rather than solve the system analytically), you are going to need to create a loop in time, starting at time zero. Can you guess the time-step you need? No? Then we need to make the time-step a \textit{parameter} that we can change later, to ensure that the system is solved well (i.e. accurately and without numerical instability). You could call this parameter e.g. \texttt{dt} (for \(dt\)) and set it\sidenote{In the parameter definition section of the code.} to an initial (guessed) value such as \(0.1s\). How long should you run the simulation for? This is also a sort of unknown at this point, at least until you have run the simulation a couple of times to get a feel for what the longest time the ball stays in the air might be. So why not pick \(100s\) to start with. Again, create a parameter to hold the value of the maximum model simulation time and assign its value in the parameter definition section of the code, e.g.:
+For now, pick any 'reasonable' values for \(s_{0}\) \sidenote[][-0.0in]{On September 24, 2010, against the San Diego Padres, Chapman was clocked at 105.1 mph (169.1 km/h) -- the fastest pitch ever recorded in Major League Baseball. If you convert 169.1 km/h into units of \(ms^{-1}\), this will give you some reasonable upper limit for your initial  thrown velocity.} and \(\phi\) \sidenote{Obviously, the angle should lie between zero and 90 \degree  (or else the throw is going backwards and/or into the ground). BE CAREFUL as \textbf{MATLAB} assumes that angles are in units of \uline{radians}, so either work in units of radians throughout, or convert from degrees into radians when you calculate the velocity component based on the angle.} (and change the default zero values in the code). (Here, the initial height of the ball is assumed to be \(1m\), but you are free to make a different assumption.)
+
+Then, because you are going to use a time-stepping approach (rather than solving the system analytically), you are going to need to create a loop in time, starting at time zero. Can you guess the time-step you need? No? Then we need to make the time-step a \textit{parameter} that we can change later, to ensure that the system is solved well (i.e. accurately and without numerical instability). You could call this parameter e.g. \texttt{dt} (for \(dt\)) and set it\sidenote{In the parameter definition section of the code.} to an initial (guessed) value such as \(0.1s\). How long should you run the simulation for? This is also a sort of unknown at this point, at least until you have run the simulation a couple of times to get a feel for what the longest time the ball stays in the air might be. So why not pick \(10s\) to start with. Again, create a parameter to hold the value of the maximum model simulation time and assign its value in the parameter definition section of the code, e.g.:
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% model parameter values}\\
-dt \ \ \ = 0.1;\\max\_t = 100.0
+...\\
+dt \ \ \ = 0.1;\\
+max\_t = 10.0
 \end{docspec}
-(Adding comments for what the parameters are (and ideally their units too).)
+(Add comments for what the parameters are and ideally include their units ...)
 
-Assuming a time-step parameter name of \texttt{dt} and a maximum time parameter, \texttt{max\_t}, if your current time is called \texttt{t}, your loop structure will look like:
+Assuming a time-step parameter name of \texttt{dt} and a maximum time, \texttt{max\_t}, if your current time is called \texttt{t}, your loop structure will look like:
 \begin{docspec}
 \textcolor{blue}{for} t = 0:dt:max\_t
 \\ \ \ \ \ \textcolor[rgb]{0,0.501961,0}{\%SOME CODE}
@@ -1642,40 +1661,38 @@ with time \texttt{t} starting at zero, and progressing to \texttt{max\_t} in ste
 \noindent\rule{4cm}{0.5pt}
 \vspace{2mm}
 
-\noindent What else do you need? You will need to know the horizontal component of the balls velocity.\sidenote[][-2.5in]{In the absence of air resistance, horizontal velocity does not actually change throughout the simulation (i.e. in each iteration of the loop, it will have the same value).}  You can calculate the (initial) horizontal component of velocity (\(u\)) from the given initial conditions of initial speed (\(s_{0})\) and initial angle of trajectory (\(\phi\))\sidenote[][-2.0in]{Just as long as you can remember how to calculate the sides of a right angled triangle given the length of the hypotenuse, which here is the speed. \\REMEMBER that \textbf{MATLAB} uses \textit{radians} for calculating with angles, not \textit{degrees}.} if you can recall your basic trigonometry 101 ... Because this variable depends on parameter values defined at the top of the code, it needs to come after the parameter list, but before the loop starts. 
+\noindent What else do you need? You will need to know the horizontal component of the balls velocity.\sidenote[][-2.5in]{In the absence of air resistance, horizontal velocity does not actually change throughout the simulation (i.e. in each iteration of the loop, it will have the same value).}  You can calculate the (initial) horizontal component of velocity (\(u\)) from the given initial conditions of initial speed (\(s_{0})\) and initial angle of trajectory (\(\phi\))\sidenote[][-2.0in]{Just as long as you can remember how to calculate the sides of a right angled triangle given the length of the hypotenuse, which here is the speed. \\REMEMBER that \textbf{MATLAB} uses \textit{radians} for calculating with angles, not \textit{degrees}.} if you can recall your basic trigonometry 101 ... Because this variable (e.g. call it \texttt{u}) depends on parameter values defined at the top of the code, it needs to come after the parameter list, but before the loop starts. 
 
+You also need a variable to represent the horizontal position of the ball (delineated here in the text as \(p\), with units of \(m\)). This will start at zero and be updated within the loop. So also in the variable initial condition section, why not define your horizontal position variable \(p\) and assign it a (initial) value of zero.
 
-You also need a variable to represent the horizontal position of the ball (delineated here in the text as \(p\), with units of \(m\)). This will start at zero and be updated within the loop. So also in the variable initial condition section, why not define your horizontal position variable \(p\) and assign it a (initial) value of zero:
+The complete section of initializing variables will look like:
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% model initial conditions}\\
-p = 0.0;\\
-u = ...
+u = ...\\
+p = 0.0;
 \end{docspec}
+(here leaving the code for deriving \texttt{u} from \texttt{s0} and \texttt{theta0}, for you to work out ...).
 
+Along with the schematic of the code structure, this should be all you need to create a basic code (but one at this point that does not actually 'do' anything). You should have 1 constant, and then 5 model \textit{parameters} defined representing: the initial height of the ball, the initial speed, and initial angle of throw, plus, maximum time and time step length. Then you should have 2 model variables: (horizontal) position \(p\), which you should have initialized to zero, and  (horizontal) velocity component \(u\), which you should have initialized calculated from \(s_{0}\) and \(\phi\). T\uline{here should be nothing in the loop so far}.
 
-For now, pick any 'reasonable' values for \(s_{0}\) \sidenote[][-0.0in]{On September 24, 2010, against the San Diego Padres, Chapman was clocked at 105.1 mph (169.1 km/h) -- the fastest pitch ever recorded in Major League Baseball. If you convert 169.1 km/h into units of \(ms^{-1}\), this will give you some reasonable upper limit for your initial  thrown velocity.} and \(\phi\) \sidenote{Obviously, the angle should lie between zero and 90 \degree  (or else the throw is going backwards and/or into the ground). BE CAREFUL as \textbf{MATLAB} assumes that angles are in units of \uline{radians}, so either work in units of radians throughout, or convert from degrees into radians when you calculate the velocity component based on the angle.} (and change the default zero values in the code).
+Check that it runs without error even though it is doing nothing useful! Add some debug (e.g. a line in the loop using \texttt{disp}) to check that the loop really does loop from zero to \texttt{max\_t} in steps of \texttt{dt}.\sidenote{Note that depending on whether or not \texttt{max\_t} is divisible by \texttt{dt} with no remainder, your loop might not exactly finish at a value for \texttt{a} of \texttt{dt}.}
 
-Along with the schematic of the code structure, this should be all you need to create a basic code (but one at this point that does not actually 'do' anything). You should have 5 model \textit{parameters} defined representing the initial height of the ball, the initial speed, and initial angle of throw, plus maximum time and time step length. Then you should have 2 model variables: (horizontal) position \(p\), which you should have initialized to zero, and  (horizontal) velocity component \(u\), which you should have initialized calculated from \(s_{0}\) and \(\phi\). T\uline{here should be nothing in the loop so far}.
-
- conditions of the model (the parts Figure \ref{fig:ch9-ball} colored in red), plus 2 parameters for the maximum time and time step length. You also have 3 \textit{variables} in the code so far -- time \(t\), which is part of the loop, (horizontal) position \(p\), which you should have initialized to zero before the loop starts, and  (horizontal) velocity component \(u\), which you should have initialized calculated from \(s_{0}\) and \(\phi\). There should be nothing in the loop so far.
-
-Check that it runs without error even though it is doing nothing useful! Maybe add some debug (e.g. a line in the loop using \texttt{disp}) to check that the loop really does loop from zero to \texttt{max\_t} in steps of \texttt{dt}.\sidenote{Note that depending on whether or not \texttt{max\_t} is divisible by \texttt{dt} with no remainder, your loop might not exactly finish at a value for \texttt{a} of \texttt{dt}.}
-
-Now to add some code to the loop. During each time-step, i.e. each time around the loop, \(dt\) time (\(s\)) passes. In time \(dt\), if the horizontal velocity of the ball is \(u\), you should be able to calculate how far it moves, right?\sidenote{Distance = velocity times time: \\\(dp=u\times dt\)} You need to add this increment in distance travelled to the current value of the position variable \(p\)\sidenote{i.e. with code like 
+Now to add some code to the loop. During each time-step, i.e. each time around the loop, \(dt\) time (\(s\)) passes. (Pause ... and think about this.) In time \(dt\), if the horizontal velocity of the ball is \(u\), you should be able to calculate how far it moves, right?\sidenote{Distance = velocity times time: \\\(dp=u\times dt\)} You need to add this increment in distance travelled to the current value of the position variable \(p\)\sidenote{i.e. with code like 
 \begin{docspecmargin}
-p = p + delta\_p;
-\end{docspecmargin} which you have seen endless times before now and should becoming wearily familiar ...}. Do this. 
+p = p + dp;
+\end{docspecmargin} which you have seen endless times before now and should becoming wearily familiar ...}. Do this (calculating first the change in position, \texttt{dp}, and then updating the position variable, \texttt{p}). (Don't forget to read the margin notes!)
 
 Re-run the code. Check it works at all (if not: debug). Try adding debug code within the loop that displays the current time (\(t\)) plus value of \(p\) at each time-step, e.g.
 \begin{docspecmargin}
 \textcolor{blue}{for} t = 0:dt:max\_t
 \\ \ \ \ \ \textcolor[rgb]{0,0.501961,0}{\%CODE TO UPDATE POSITION}
-\\ \ \ \ \ disp(['current time = ', num2str(t), ', position = ', num2str(p)]);
+\\ \ \ \ \ disp(['current time = ', num2str(t), ', ...
+\\ \ \ \ \ position = ', num2str(p)]);
 \\\textcolor{blue}{end}
 \end{docspecmargin}
 so that you can track what is going on. (You can make a fancier output if you wish and add in the relevant units to the output.)
 
-Strictly, when updating the position of the ball in the first iteration of the loop, time is \(dt\) at this point, not zero, which is what the loop thinks (you already have a position of zero at time zero -- the initial conditions). So rather than starting the loop at zero, why not make a minor modification, and start the loop instead at a value of \(dt\).
+Strictly, when updating the position of the ball in the first iteration of the loop, time is \(dt\) at this point, not zero, which is what the loop thinks (you already have a position of zero at time zero -- the initial conditions). So rather than starting the loop at zero,  modify the loop to start instead at a value of \(dt\).
 
 You should have a working model at this point, albeit only for the horizontal position of the ball.
 
@@ -1683,38 +1700,48 @@ You should have a working model at this point, albeit only for the horizontal po
 \noindent\rule{4cm}{0.5pt}
 \vspace{-2mm}
 
-\newthought{\textit{\textbf{Part II }}} Now for tracking the vertical position (and velocity) of the ball. Copy your previous \textsf{m-file} -- use this as a starting point for the new model.\sidenote{So for instance we will now interpret \(p\) as the vertical, not horizontal position of the ball.}
+\newthought{\textit{\textbf{Part II }}} Now for tracking the vertical position (and velocity) of the ball. Copy and rename your previous \textsf{m-file} -- use this as a starting point for the new model. You are going to modify your program so that \(p\) is now the vertical, not horizontal, position of the ball.
 
-\begin{marginfigure}[-0.0in]
+\begin{marginfigure}[1.25in]
 \includegraphics[width=\linewidth]{ch9-schematic-ball_v.eps}
 \caption{Schematic of the code for simulating the vertical movement of a ball.}
 \label{fig:ch9-schematic-ball_v}
 \end{marginfigure}
 
-Think about what is different about the physics of the system (Figure \ref{fig:ch9-ball}) from before -- this is going to directly inform how you adjust and add to the code. To start with, you should have noticed that the initial position (\(p_{(0)}\)) of the ball, does not start at zero, but rather at height \(h\) (see Figure \ref{fig:ch9-ball}). This is one change to make in the code (i.e. having defined \(h\) as a parameter, you subsequently use \(h\) to set the initial value of \(p\)). Also -- the initial velocity component, \(v\), is different from before (and in fact is assigned a different letter in Figure \ref{fig:ch9-ball}). So go back to your triangle trigonometry,  and calculate of the initial vertical velocity component. Change the name of whatever variable you used for \(u\) to something distinct that you'll remember stands for \(v\) in the equation. Overall, the code structure looks like Figure \ref{fig:ch9-schematic-ball_v}.
+Think about what is different about the physics of the system (Figure \ref{fig:ch9-ball}) from before -- this is going to directly inform how you adjust and add to the code. To start with, you should have noticed that the initial position (\(p_{(0)}\)) of the ball does not start at zero, but rather at height \(h_{0}\) (see Figure \ref{fig:ch9-ball}). This is one change to make in the code (i.e. having defined \(h_{0}\) as a parameter, you subsequently use \(h_{0}\) to set the initial value of \(p\)). Also -- the initial (vertical) velocity component, which we will call \(v\) (rather than \(u\) which we used for the horizontal velocity), is different from before. So go back to your triangle trigonometry,  and calculate of the initial vertical velocity component (\(v_{0}\)). Overall, the code structure looks like Figure \ref{fig:ch9-schematic-ball_v}.
 
-You could, and indeed should, test the code so far. It should in fact do something very similar to before, with position \(p\) increasing, linearly, as a function of time (i.e. as the loop progresses in the number of iterations carried out). The only differences you should see are that \(p\) starts from value \(h\) and the rate at which \(p\) changes will be greater or less than before, depending on the value of \(\theta\) you assumed.\sidenote{What value of \(\theta\) would result in an \uline{identical} change in \(d\) with time (comparing the previous horizontal-only model with the new vertical (only) one)?}
+You could, and indeed should, test the code so far. It should in fact do something very similar to before, with position \(p\) increasing, linearly, as a function of time (i.e. as the loop progresses in the number of iterations carried out). The only differences you should see are that \(p\) starts from value \(h_{0}\) and the rate at which \(p\) changes will be greater or less than before, depending on the value of \(\theta\) you assumed.\sidenote{What value of \(\theta\) would result in an \uline{identical} change in \(d\) with time (comparing the previous horizontal-only model with the new vertical (only) one)?}
 
-So far so good. Except balls generally do not continue travelling vertically for ever. You are missing gravity in this (vertical-only) model. Your variable for \(v\) (vertical velocity) now needs to change as a function of time and you'll need to update its value within the loop\sidenote{\uline{Before} or \uline{after} the updating the position? Actually, a slightly tricky question.}. How are you going to update \(v\)? Well, the change in velocity with time is called acceleration and in this example the only force exerting any acceleration on the ball is gravity. Mathematically we can approximate the change in velocity, \(\Delta v\) as:
+So far so good. Except balls generally do not continue travelling vertically upwards for ever. You are missing gravity in this (vertical-only) model. Your variable for \(v\) (vertical velocity) now needs to change as a function of time and you'll need to update its value within the loop\sidenote{\uline{Before} or \uline{after} the updating the position? Actually, a slightly tricky question.}.
+
+How are you going to update \(v\)? Well, the change in velocity with time is called acceleration and in this example the only force exerting any acceleration on the ball is gravity. Mathematically we can approximate the change in velocity, \(\Delta v\) as:
 \begin{docspec}
 \(\Delta v=-\Delta t\cdot g\)
 \end{docspec}
 where \(g\) is the acceleration due to gravity. Note the appearance of a minus sign in the equation if we are considering a coordinate system with distance upwards.
 
-So in the loop, calculate the change in velocity during the time-step, and then update the value of \(v\)\sidenote{Hint:
+So in the loop, calculate the change in velocity during the time-step, and then update the value of \(v\)\sidenote[][-0.0in]{Hint:
 \begin{docspecmargin}
 \(v_{(t+1)}=v_{(t)}+\Delta v\)
-\end{docspecmargin} where \(v_{(t+1)}\) is the new (at the next time-step) velocity and  \(v_{(t)}\) the current velocity}.\sidenote{Note that in this example and as per Figure \ref{fig:ch9-schematic-ball_v}, we update the vertical position in the loop \uline{first} (at the start of the loop), and then update the velocity afterwards.}
+\end{docspecmargin} where \(v_{(t+1)}\) is the new (at the next time-step) velocity and  \(v_{(t)}\) the current velocity}.\sidenote{Note that in this example and as per Figure \ref{fig:ch9-schematic-ball_v}, we update the vertical position in the loop \uline{first} (at the start of the loop), and then update the velocity afterwards.} You should end up with 5 lines in the loop (excluding comments):
+\begin{enumerate}[noitemsep]
+\setlength{\itemindent}{.2in}
+\item Calculate the change in position (\texttt{dp}), based on the current (vertical) velocity, \texttt{v} and the increment in time (\texttt{dt}).
+\item Update the position \texttt{p} based on the current value of the position, plus the change in value (\texttt{dp}).
+\item A line of debug to display the current (loop) time and the current position.
+\item Calculate the change in velocity (\texttt{dv}), based on gravitational acceleration and the increment in time (\texttt{dt}).
+\item Update velocity \texttt{v} based on the current value of velocity, plus the change in value (\texttt{dv}).
+\end{enumerate}
 
-Re-run the model ... what happens? Does this seem 'reasonable' ... ? At this point you might consider whether you really do need to run the model for as long as \(100s\). Play about with the assumed initial angle and also the velocity and get a feel for what is the longest the ball lasts in the air (i.e. until its position becomes negative). 
+Re-run the model ... what happens? Does this seem 'reasonable' (i.e. how the position changes as a function of time)?\sidenote{You might think about your own direct experience with throwing balls, as a reality check. i.e. have you ever thrown one that took a minute to come down, or one that hit the ground within 0.1s? If these sorts of things happen in the model, you may have a bug in there somewhere.} At this point you might consider whether you really do need to run the model for as long as \(10s\). Play about with the assumed initial angle and also the velocity and get a feel for what is the longest the ball lasts in the air (i.e. until its position becomes negative). 
 
 \vspace{1mm}
 \noindent\rule{4cm}{0.5pt}
 \vspace{-2mm}
 
-\newthought{\textit{\textbf{Part III }}} You should now have 2 working models (sperate \textbf{m-files}) -- one for the horizontal position of the ball, and one for the vertical position (and vertical velocity) of the ball. You now want to combine the 2 sperate parts of the model.\sidenote{I suggest basing the combined model on the vertical model (as it is the more complicated of the 2) and hence copying-and-renaming the 2nd script (i.e. so you end up with 3 different \textbf{m-files} in the end).}
+\newthought{\textit{\textbf{Part III }}} By now, you should now have 2 working models (sperate \textbf{m-files}) -- one for the horizontal position of the ball, and one for the vertical position (and vertical velocity) of the ball. You now want to combine the 2 sperate parts of the model.\sidenote{I suggest basing the combined model on the vertical model (as it is the more complicated of the 2) and hence copying-and-renaming the 2nd script (i.e. so you end up with 3 different \textbf{m-files} in the end).}
 
-How to merge? Mostly, the code content of the 2 individual models was  identical. What you do need to copy across from the horizontal model and add in is:
+How to merge? Mostly, the code content of the 2 individual models was  identical, but there is more in the vertical position model, so that would be the better one to copy and rename. Then what you need to copy across from the horizontal model and add in is:
 \begin{itemize}[noitemsep]
 \setlength{\itemindent}{.2in}
 \item The calculation of the initial value of \(u\).
@@ -1730,10 +1757,10 @@ By now, you should have noted a slight problem -- in both previous (sperate) mod
 \\"I used the same variable name twice and which is why the model did not work -- duh!"
 }
 
-My solution would be ... a vector to store the current position -- just of one row and two columns, i.e. exactly as you might write a position in \((x,y)\) notation. The horizontal position (\(x\)) is hence assigned the first element (\texttt{p(1)}) and the vertical position, the 2nd (\texttt{p(2)}). If you do this (i.e. resolve the variable clash this way), you'll need to edit how you set the initial conditions in the code, e.g.
+My solution would be ... a vector, to store the current position -- just of one row and two columns, i.e. exactly as you might write a position in \((x,y)\) notation. The horizontal position (\(x\)) is hence assigned the first element (\texttt{p(1)}) and the vertical position, the 2nd (\texttt{p(2)}). If you do this (i.e. resolve the variable clash this way), you'll need to edit how you set the initial conditions in the code, e.g.
 \begin{docspec}
 p(1) = 0;
-\\p(2) = h;
+\\p(2) = h0;
 \end{docspec}
 as well as how the position is updated in the loop. You can leave the name of the increment in position (\(\Delta p\)) the same if you wish (as this is a temporary variable whose value is replaced each time around the loop in any case), e.g.
 \begin{docspec}
@@ -1742,18 +1769,18 @@ as well as how the position is updated in the loop. You can leave the name of th
 \ \ \ dp = dt*v;\\
 \ \ \ p(2) = p(2) + dp;
 \end{docspec}
+where the 1st 2 lines calculate the change in horizontal position and then update the \(x\) (\texttt{p(1)}) component of position, and the 2nd 2 do the same only for the \(y\) (\texttt{p(2)}) component of position. 
 
 Hopefully this works and runs ... Maybe add some output within the loop to track its progress, such as:
 \begin{docspecmargin}
 \textcolor{blue}{for} t = 0:dt:max\_t
 \\ \ \ \ \ \textcolor[rgb]{0,0.501961,0}{\%CODE TO UPDATE POSITION}
-\\ \ \ \ \ disp([\textcolor[rgb]{1,0,1}{'('}, num2str(p(1)), \textcolor[rgb]{1,0,1}{','}, num2str(p(2)), \textcolor[rgb]{1,0,1}{') @ t = '}, num2str(t)]);
-\\ \ \ \ \ \textcolor[rgb]{0,0.501961,0}{\%CODE TO UPDATE VELOCITY}
+\\ \ \ \ \ disp([\textcolor[rgb]{1,0,1}{'('}, num2str(p(1)), \textcolor[rgb]{1,0,1}{','}, ...
+\\ \ \ \ \ num2str(p(2)), \textcolor[rgb]{1,0,1}{') @ t = '}, num2str(t)]);
 \\\textcolor{blue}{end}
 \end{docspecmargin}
 
 You should end up with output, depending on how you constructed the string to be displayed by \texttt{disp} (and what initial conditions you chose ...), like:
-
 \begin{docspecmargin}
 >> ball\_uv
 \\(0.5,1.866) @ time 0.1
@@ -1780,22 +1807,26 @@ You should end up with output, depending on how you constructed the string to be
 \\ \ldots 
 \\ \ldots 
 \end{docspecmargin}
-which is far far far from exciting ... but does at least confirm a constant change in horizontal position with time, and a vertical position that initially increases above the initial condition (\(h=1.0\)) but subsequently drops back and eventually falls below zero. And the point at which it reaches zero is the value of \(d\) of course.
+which is far far far from exciting ... but does at least confirm a constant change in horizontal position with time, and a vertical position that initially increases above the initial condition (\(h_{0}=1.0\)) but subsequently drops back and eventually falls below zero. And the time at which the vertical position reaches zero, is the value of \(d\) in  Figure \ref{fig:ch9-ball}.
 
 The very least we could do at this point is to detect when the ball has reached the ground and terminate the loop. I'll leave this code for you to devise, but you'll need:
 \begin{enumerate}[noitemsep]
 \setlength{\itemindent}{.2in}
-\item A conditional statement (\texttt{if ...}) to test whether the vertical position has dropped below zero. This would go in the loop just after the position of the ball has been updated, And ...
-\item The \textbf{MATLAB} command to exit a loop, which you have seen before (look it up if you have forgotten).
+\item A conditional statement (\texttt{if ...}) to test whether the vertical position (\texttt{p(2)}) has dropped below zero. This would go in the loop just after the position of the ball has been updated, and  ...
+\item ... within the conditional, the \textbf{MATLAB} command to exit a loop, which you have seen before (look it up if you have forgotten!).
 \end{enumerate}
 
-Now you might note that when the ball reaches the ground (technically: its height falls below zero) and the loop exists, you may already be way below zero. In fact, if you are even the least little bit observant, you might note that the change in height per time-step at the end of the simulation is quite large (order meters) and hence it is unlikely you'll ever capture the moment that the ball is very close to the ground. Unless you shorten the time-step, that is. So play about with a shorter time-step (you only need change the value you assigned to the parameter representing \(\Delta t\) in the code). How short does it have to be in order to catch the moment the ball reaches the ground (passes zero) to within e.g. \(10 cm\)?\sidenote{i.e. to have the loop terminate when the height is no more than \(-10.0 cm\).} What about \(1 cm\)?
+Now you might note that when the ball reaches the ground (technically: its height falls below zero) and the loop exists, you may already be way below zero. In fact, if you are even the least little bit observant, you might note that the change in height per time-step at the end of the simulation is quite large (order meters) and hence it is unlikely you'll ever capture the moment that the ball is very close to the ground. Unless you shorten the time-step, that is. So play about with a shorter time-step (you only need change the value you assigned to the parameter representing \(\Delta t\) in the code). How short does it have to be in order to catch the moment the ball reaches the ground (passes zero) to within e.g. \(0.1 m\)?\sidenote{i.e. to have the loop terminate when the height is no more than \(-0.1 m\).} What about \(0.01 m\)? 
 
-Finally -- as an alternative to creating a \texttt{for} loop, pre-defining a maximum number of time-steps (or maximum time) and then  having to exit the loop once the ball reaches zero height about the ground, try re-writing the loop as a \texttt{while} loop, with the condition (for the loop to continue looping) that the ball has a height above the ground that is greater than zero. (This makes for a neater solution to the problem.)
+In terms of how long the model takes to run and how many time-steps it uses -- is it even 'worth' finding when the ball hits the ground to an accuracy of \(0.01 m\)? What is the difference in the value of \(h\) you determine between different assumptions about the time-step? As you increase the length of the time-step, when does the value of \(d\) start to appreciably change (compared to assuming a very short time-step)? This is a measure of 'error' associated with the assumed time-step duration. Think about whether the error in \(d\) is 'meaningful' compared to \(d\) itself.
+
+\newthought{\textbf{\textcolor{red}{OPTIONAL}} -- Finally --} as an alternative to creating a \texttt{for} loop in which we pre-defined a maximum number of time-steps (or maximum time) and then  had to exit the loop once the ball reaches zero height about the ground, try re-writing the loop as a \texttt{while} loop, with the condition (for the loop to continue looping) that the ball has a height above the ground that is greater than zero. (This makes for a much neater solution to the problem.)
 
 \vspace{1mm}
 \noindent\rule{4cm}{0.5pt}
-\vspace{-2mm}
+\vspace{2mm}
+
+\newpage
 
 \newthought{\textit{\textbf{Part IV }}} Some graphics fun.
 
@@ -1821,32 +1852,32 @@ You can make the loop proceed slower, by adding a time delay -- i.e. each time a
 \begin{docspec}
 \ \ \ \ pause(0.05);
 \end{docspec}
-which should insert a \(50 ms\) delay into the loop. Run it.
+which should insert a \(50 ms\) delay into the loop. Place this line just after \texttt{scatter}. Run it.
 
-\marginnote{\begin{mdframed}[backgroundcolor=gray!10, roundcorner=10pt,leftmargin=1, rightmargin=1, innerleftmargin=5, innerrightmargin=5, innertopmargin=5,innerbottommargin=5, outerlinewidth=1, linecolor=light-gray]
+\marginnote[-1.0in]{\begin{mdframed}[backgroundcolor=gray!10, roundcorner=10pt,leftmargin=1, rightmargin=1, innerleftmargin=5, innerrightmargin=5, innertopmargin=5,innerbottommargin=5, outerlinewidth=1, linecolor=light-gray]
 \docenvdef{pause}
 \\\textbf{MATLAB} says: "\textit{\texttt{pause(mjs)} pauses the MATLAB job scheduler's queue so that jobs waiting in the queued state will not run.}"
 \\Garbage.
 \\\texttt{pause(n)} will pause the execution of the code by \texttt{n} seconds.
 \end{mdframed}}
 
-Now it has all got really trippy. If you tell it no different, \texttt{MATLAB} insists on auto-scaling the (\(x\) and \(y\) limits of the) plot. As the position of the ball increases (initially) in \textit{y}-axis direction, and (constantly) along the \textit{x-axis} direction, \textbf{MATLAB} periodically re-scales the axes. Annoying. So before the loop starts and after you create the figure window, why not prescribe axes limits(?) Having played with the model you should have a reasonable idea for what the maximum vertical and horizontal distances are associated with 'reasonable' choices for the initial conditions (\(s_{0}\) and \(\theta\)). Don't forget the command for specifying a scale for the axis limits is \texttt{axis}. (Figure \ref{fig:ch9-ball_uv}-esk maybe?)
+Now it has all got really trippy. If you tell it no different, \texttt{MATLAB} insists on auto-scaling the (\(x\) and \(y\) limits of the) plot. As the position of the ball increases (initially) in \textit{y}-axis direction, and (constantly) along the \textit{x-axis} direction, \textbf{MATLAB} periodically re-scales the axes. Annoying. So before the loop starts and after you create the figure window, why not prescribe axes limits(?) Having played with the model you should have a reasonable idea for what the maximum vertical and horizontal distances are associated with 'reasonable' choices for the initial conditions (\(s_{0}\) and \(\theta\)).\sidenote[][-1.0in]{Don't forget the command for specifying a scale for the axis limits is \texttt{axis}.} You should end up with something like Figure \ref{fig:ch9-ball_uv} once the program has completed.
 
-\begin{marginfigure}[-0.0in]
+\begin{marginfigure}[-0.5in]
 \includegraphics[width=\linewidth]{ch9-ball_uv.eps}
 \caption{Trajectory of a ball!!}
 \label{fig:ch9-ball_uv}
 \end{marginfigure}
 
-You can have all the trajectories appearing on the same plot if you comment out the \texttt{figure} command in your script, and open a single new figure window at the command line (\texttt{>> figure}). Then each and every time you run the script, the new trajectory will be added on top. You could also try turning your script into a function so that you do not need to edit the values of \(s_{0}\) and \(\theta\) in the code, but pass them into the program as parameters instead (the function needs not return anything however). 
+\newpage 
+
+\newthought{\textbf{\textcolor{red}{OPTIONAL}} -- Also --} try turning your script into a function so that you do not need to edit the values of \(s_{0}\) and \(\theta\) in the code, but pass them into the program as parameters instead (the function needs not return anything however).
 
 \vspace{1mm}
 \noindent\rule{4cm}{0.5pt}
 \vspace{2mm}
 
-\noindent Having developed some visualization for the trajectory of the ball, this is a good point to experiment with the length of the time-step and determine at what point (time-step duration) the numerical approximation starts to break down -- i.e. as compared to a simulation with a very short time-step (or an analytical solution), when (what longer time-step duration) does the trajectory start to visually differ (and the distance travelled before the ball hits the ground, change)?
-
-e.g. Figure \ref{fig:ch9-ball_uv2} illustrates a \(0.1s\) time-step and Figure \ref{fig:ch9-ball_uv3} a \(0.2s\) time-step (contrast with Figure \ref{fig:ch9-ball_uv}).
+\noindent Having developed some visualization for the trajectory of the ball, this is a good point to experiment with the length of the time-step and determine at what point (time-step duration) the numerical approximation starts to break down -- i.e. as compared to a simulation with a very short time-step (or an analytical solution), when (what longer time-step duration) does the trajectory start to visually differ (and the distance travelled before the ball hits the ground, change)? e.g. Figure \ref{fig:ch9-ball_uv2} illustrates a \(0.1s\) time-step and Figure \ref{fig:ch9-ball_uv3} a \(0.2s\) time-step (contrast with Figure \ref{fig:ch9-ball_uv}).
 
 \begin{marginfigure}[-0.0in]
 \includegraphics[width=\linewidth]{ch9-ball_uv2.eps}
@@ -1877,14 +1908,14 @@ and you get a circle plotted at location \((1,2)\).
 ... and ... it is gone (but leaving (re-scaled) axes in place).
 
 If, in your loop, after updating the position of the ball, you have:
-\begin{docspec}
-\ \ \ pause(0.025);\\
-\ \ \ delete(h);\\
+\begin{docspecmargin}
 \ \ \ h=scatter(p(1),p(2),50,\textcolor[rgb]{1,0,1}{'filled'}, ...\\
-\ \ \ \ \ \ \textcolor[rgb]{1,0,1}{'MarkerFaceColor'},[1 0 0],\textcolor[rgb]{1,0,1}{'MarkerEdgeColor'},[0 0 0]);
-\end{docspec}
+\ \ \ \ \ \ \textcolor[rgb]{1,0,1}{'MarkerFaceColor'},[1 0 0],\textcolor[rgb]{1,0,1}{'MarkerEdgeColor'},[0 0 0]);\\
+\ \ \ pause(0.025);\\
+\ \ \ delete(h);
+\end{docspecmargin}
 you should see a red ball (with a black outline) smoothly sailing across the screen.\sidenote[][-1.0in]{You could make the animation a little smoother by decreasing the time-step and also playing about with the delay (\texttt{pause}).}
-\sidenote[][-0.0in]{
+\sidenote[][-0.25in]{
 A slight complication here as that as it stands, the code will not work because in the first time around the loop, when you get to \texttt{delete(h)}, \textbf{MATLAB} is unhappy because the \textit{handle} \texttt{h} has not yet been defined anywhere.
 The easiest way to fix this is outside the loop, to plot the initial position of the ball (and obtain its \textit{handle}). e.g.:
 \begin{docspecmargin}
@@ -1898,9 +1929,9 @@ Now when the loop starts, there is a 'ball' to delete!
 
 \vspace{1mm}
 \noindent\rule{4cm}{0.5pt}
-\vspace{2mm}
+\vspace{-2mm}
 
-\noindent A further refinement would be to add a term to account for air resistance -- as the ball travels through the air, friction will act to decelerate the ball. 
+\newthought{\textbf{\textcolor{red}{OPTIONAL}} -- A further refinement} would be to add a term to account for air resistance -- as the ball travels through the air, friction will act to decelerate the ball. 
 
 You could represent the effect of friction in a similar way to how you accounted for gravity, except (a) friction will affect both velocity components, and (ii) friction will act to decelerate the ball, regardless of its direction of travel (up or downwards). Friction also differs from gravitational acceleration in that the deceleration will not be constant, but instead a function of velocity. Furthermore, can assume that friction will scale with the square of the velocity (rather than linearly).
 
@@ -2755,7 +2786,7 @@ Now set the production (at depth) rate similar to the net (from atmosphere) cons
 
 Now we'll build on your excellent GUI skills and create a GUI interface for the ballistics (ball trajectory) model.
 
-The idea of the 'game' is that you are going to launch a ball, the behaviour of which will be calculated as per your time-stepping ballistics model. Rather than simply detect whether or not the ball falls below zero (height), there will be a graphic (Pok\'emon) displayed and a 'hit' will be recorded if the position of the ball falls within the boundary of the graphic. The key initial conditions -- initial speed and angle of the launched ball, will be set by controls in the GUI rather than set in code. Finally, there will be a series of refinements to improve the look and feel (and game-play) of the game that will introduce a few further concepts in creating good MATLAB GUIs and also new MATLAB functions. 
+The idea of the 'game' is that you are going to launch a ball, the behaviour of which will be calculated as per your time-stepping ballistics model. Rather than simply detect whether or not the ball falls below zero (height), there will be a graphic (Pok\'emon) displayed and a 'hit' will be recorded if the position of the ball falls within the boundary of the graphic. The key initial conditions -- initial speed and angle of the launched ball, will be set by controls in the GUI rather than set in code. Finally, there will be a series of refinements to improve the look and feel (and game-play) of the game that will introduce a few further concepts in creating good \textbf{MATLAB} GUIs and also new \textbf{MATLAB} functions. 
 Ultimately, the GUI (app) might look something like Figure \ref{fig:chGUI-pokemon1c}, but how the controls are positioned in the window and their relative size and shape, is pretty well much up to you. You could also control how the initial parameter values are set in a different way (e.g. using an \textbf{Edit Text} box rather than a \textbf{Slider}). Quite what buttons you want and how they are used is also a matter of personal aesthetics. 
 
 \begin{marginfigure}[-5.25in]
@@ -2786,9 +2817,9 @@ There is quite a lot of coding to be done and the risk of a huge mess ensuing. S
 
 \end{description}
 
-Because of the complexity of the project, the complete code (\textbf{m-file}) as well as associated \texttt{.fig} GUI file, are provided (on the course webpage). These are provided if needed for guidance (e.g. what code goes where?), \uline{only}. Try your best to work through the creation of the App without this.
+\noindent Because of the complexity of the project, the complete code (\textbf{m-file}) as well as associated \texttt{.fig} GUI file, are provided (on the course webpage). These are provided if needed for guidance (e.g. what code goes where?), \uline{only}. Try your best to work through the creation of the App without this.
 
-Example images are provided (download via the course webpage) and you can substitute your own if you prefer.
+Example images are provided but you can substitute your own if you prefer.
 
 If you run into unexpected and apparently nonsensical issues when you make changes and text the App, try closing the design window and any open \textsf{Figure window}s and type \texttt{>> clear all}.
 
@@ -2821,33 +2852,35 @@ axes('pos',[x,y,dx,dy])
 where (\texttt{x},y) are the co-ordinates in the window, which by default are from \(0-1\) in both \textit{x} and \textit{y} directions. \texttt{dx} and \texttt{dy} are the width and height, respectively, of the axes (in the same window coordinate system).
 
 For instance, to create a set of axes starting at the origin, but only 25\% of the full width and height of the window:
-\begin{docspec}
+\begin{docspecbold}
 >> axes('pos',[0.0,0.0,0.25,0.25]);
-\end{docspec}
+\end{docspecbold}
 If you now display the image:
-\begin{docspec}
+\begin{docspecbold}
 >> imshow(A);
-\end{docspec}
+\end{docspecbold}
 \sidenote{Or whatever you called the variable with the image in.} you should see a smaller version of the image, positioned at the origin. If you remembered to assign the handle to a variable:
-\begin{docspec}
+\begin{docspecbold}
 >> h = imshow(A);
-\end{docspec}
+\end{docspecbold}
 you can then delete the image:
-\begin{docspec}
+\begin{docspecbold}
 >> delete(h);
-\end{docspec}
+\end{docspecbold}
 
-OK -- now dig up the \textit{script} for your ball-throwing animation -- the one where the \texttt{scatter} plotting ball location \textit{object} was deleted after a pause (giving the impression of movement/animation)\sidenote{From Part IV of Section 8.1}. Near the start of the \textit{script} (before the loop starts), load in the Pok\'eball graphic\sidenote{Under \textsf{\textbf{got data?}} on the website.}\sidenote{(or pick your own graphic)}. Then, instead of using the \texttt{scatter} function to plot a single point (circle), you are going to:
+\noindent OK -- now dig up the \textit{script} for your ball-throwing animation -- the one where the \texttt{scatter} plotting ball location \textit{object} was deleted after a pause (giving the impression of movement/animation)\sidenote{From Part IV of Section 8.1}. Near the start of the \textit{script} (before the loop starts), load in the Pok\'eball graphic\sidenote{(or pick your own graphic)}. Then, instead of using the \texttt{scatter} function to plot a single point (circle), you are going to:
 \begin{enumerate}[noitemsep]
 \setlength{\itemindent}{.2in}
 
+\vspace{1mm}
 \item Define an \texttt{axes} object, either centered (harder)  on the position of the ball that \texttt{scatter} plotted, or taking as its origin (easier), the position of the ball. The width and height of the axis ... you can play about with, but it should be a relatively small proportion of the total size of the main axes.
 \\Note ... that axes uses relative coordinates (i.e. \(0-1\) in both dimensions) and not your actual ball position (in units of \(m\)). So you'll need to determine the horizontal and vertical position of the ball, \uline{as a fraction}, of the total size of your domain.\sidenote{e.g. you might have considered a maximum horizontal distance of \(10m\) and a maximum vertical distance of \(7.5m\) and specified:
 \begin{docspecmargin}
 axis([0 10 0 7.5]);
 \end{docspecmargin}
-In which case, for the position of the ball in relative/normalized units -- divide the \textit{x} position by \(10\) and the \textit{y} position by \(7.5\).}
-\\It is important here not to be confused between the different sets of axes -- you defined the primary one, outside of the loop, and which  defines the domain in which the trajectory is simulated, perhaps something like:
+In which case, for the position of the ball in relative/normalized units -- divide the \textit{x} position by \(10\) and the \textit{y} position by \(7.5\).
+\\So, if your \(x\) and \(y\) positions were given by \texttt{h(1)} and \texttt{h(2)}, respectively, the corresponding coordinates of the frame are then: \\\texttt{h(1)/10}, \texttt{h(2)/7.5}.}
+\\It is important here not to be confused between the different sets of axes -- you defined the primary one, outside of the loop, and which  defines the domain in which the trajectory is simulated:
 \begin{docspec}
 axes(\textcolor[rgb]{1,0,1}{'Position'},[0 0 1 1],\textcolor[rgb]{1,0,1}{'Visible'},\textcolor[rgb]{1,0,1}{'off'});
 \end{docspec}
@@ -2855,11 +2888,18 @@ you then specified what (\textit{x,y}) limits the axes represented, e.g.:
 \begin{docspec}
 axis([0 x\_max 0 y\_max]);
 \end{docspec}
-(here, use parameters containing the maximum \textit{x} and \textit{y} limits).
-\\In contrast -- within the loop, you are defining a small axes region to contain the image. (And whose location and width/height are given in relative (\(0-1\) scale) units, rather than \(0-x_{max}\) and \(0-y_{max}\).)
+(here, use parameters containing the maximum \textit{x} and \textit{y} limits). You then \texttt{scatter} plot the ball's position in the \(x_{max}\),\(y_{max}\) domain.
+\\In contrast ...  to contain (display) the image you are defining a small axes region (within the loop). The location and width/height of this graphics frame are given in relative (\(0-1\) scale) units, rather than \(0-x_{max}\) and \(0-y_{max}\) you assumed with \texttt{scatter}.
+\\The line:
+\begin{docspec}
+axes('pos',[x,y,dx,dy])
+\end{docspec}
+(where you need to replace \texttt{[x,y,dx,dy]} with the appropriate coordinates and image size - see margin note for an example of deriving the correct coordinates) comes in the code in place of scatter.  
 
-\item Plot the ball image (\texttt{imshow}). Assign the graphics \textit{handle} returned by the function to a variable.
+\vspace{1mm}
+\item Plot the ball image (i.e. add the command \texttt{imshow}, which should come immediately after the \texttt{axes} command). Assign the graphics \textit{handle} returned by the function to a variable.
 
+\vspace{1mm}
 \item As per previously, after a delay, you can delete the graphic object,
 
 \end{enumerate}
@@ -2872,11 +2912,15 @@ Omitting \texttt{delete(h)}, the output of your ball/trajectory model should loo
 \label{fig:ch10-pokeball1}
 \end{marginfigure}
 
-Ignoring the fact that image deleting is disabled, the images (\textit{sprites}) Figure \ref{fig:ch10-pokeball1} have a black background around them. Yuk. If you picked an image with a white background, it would look better, unless you had a dark background.\sidenote{You could pick an image which is square. But what balls have you seen that are cubes? Seriously. Do you get out at all an play any sports? Or even watch TV?!??}
+\vspace{1mm}
+\noindent\rule{4cm}{0.5pt}
+\vspace{-2mm}
 
-Some (raster) graphics formats enable a transparency to be defined -- basically a color that ... is transparent. Common formats with such a capability include \textsf{.gif} and \textsf{.png}. As \textsf{.png} is a valid format for \texttt{imread} -- try and find a \textsf{.png} image on the internet with a transparency.\sidenote{In Google search / images, a transparent background is illustrated as a grey-white checkerboard.} You could also use the Pok\'eball image provided (which has a transparent background).
+\newthought{\textbf{\textcolor{red}{OPTIONAL}}} -- Ignoring the fact that image deleting is disabled, the images (\textit{sprites}) Figure \ref{fig:ch10-pokeball1} have a black background around them. Yuk. If you picked an image with a white background, it would look better, unless you had a dark background to the entire figure window.\sidenote{You could pick an image which is square. But what balls have you seen that are cubes? Seriously. Do you get out at all an play any sports? Or even watch TV?!??}
 
-To enact a transparent background in \textbf{MATLAB}, you first have to obtain additional handles when you read in the image:
+Some (raster) graphics formats enable a 'transparency' to be defined -- basically a color that ... is transparent. Common formats with such a capability include \textsf{.gif} and \textsf{.png}. As \textsf{.png} is a valid format for \texttt{imread} -- try and find a \textsf{.png} image on the internet with a transparency.\sidenote{In Google search / images, a transparent background is illustrated as a grey-white checkerboard.} You could also use the Pok\'eball image provided (which has a transparent background).
+
+To enact a transparent background in \textbf{MATLAB} is a bit of a mess ... you first have to obtain additional handles when you read in the image:
 \begin{docspec}
 [img\_ball, h\_map\_ball, h\_alpha\_ball] = imread(\textcolor[rgb]{1,0,1}{'Pokeball.png'});
 \end{docspec}
@@ -2910,7 +2954,7 @@ To achieve a GUI along the lines of Figure \ref{fig:chGUI-pokemon1c} you need to
 \begin{enumerate}[noitemsep]
 \setlength{\itemindent}{.2in}
 \item Something to display all the action and graphics in. This is pretty well much like \textbf{MATLAB} creates when you use \texttt{plot}, \texttt{scatter}, or any of the graphical functions that create a \textsf{Figure Window}. This is called an \textsf{Axes} object. 
-\item A \textbf{Push Button} for telling MATLAB to start calculating (and displaying) the balls' trajectory.
+\item A \textbf{Push Button} for telling \textbf{MATLAB} to start calculating (and displaying) the balls' trajectory.
 \item A \textsf{Push Button} for resetting the game once it is finished.\sidenote{This we'll only worry about making use of this in Part IV.}
 \item A \textsf{Push Button} to finish the game and close the App.
 \item A \textsf{Slider} (bar) to set the initial speed of the ball.
@@ -2946,7 +2990,7 @@ Because we need to link the \textsf{Slider} to our model (in terms of parameter 
 
 \item Create a second \textsf{Slider} ('\textsf{slider2}') for setting the initial angle of the ball (\textit{theta}).\sidenote{Here I assumed a range of \(0\) to \(90 \degree \), with a default of \(0 \degree \).}
 
-\item Because the \textsf{Sliders} themselves do not tell you quite what value you have slide the slider to, it is a Good Idea to somewhere display the value. We'll do this via a \textsf{Static Text} box ('\textsf{text1}') and you'll need to create one to go with each \textsf{Slider} (so you'll also have a '\textsf{text2}' named object). For now -- simply leave the default text property as it is.
+\item Because the \textsf{Sliders} themselves do not tell you quite what value you have slide the slider to, it is a Good Idea to somewhere display the value. We'll do this via a \textsf{Static Text} box ('\textsf{text1}') and you'll need to create one to go with each \textsf{Slider} (so you'll also have a '\textsf{text2}' named object). For now -- simply leave the default text as is.
 
 \item Finally, if you follow the design in Figure \ref{fig:chGUI-pokemon1c}, you could add a further pair of \textsf{Static Text} boxes in order to display the units. This is far from essential and I'll leave it up to you whether you bother, particularly if your window is cluttered already. 
 
@@ -2956,53 +3000,63 @@ That is the basic GUI design done. Save and run (having first closed any open, r
 
 At this point it is worth quickly orientating you around the automatically-generated code \textsf{m-file}:
 
+\vspace{-2mm}
 \begin{itemize}[noitemsep]
 \setlength{\itemindent}{.3in}
-\item At the very top:
+\vspace{1mm}
+\item At the very top of the \textbf{m-file} appears:
 \begin{docspec}
 \textcolor{blue}{function} varargout = Pokemon(varargin)
 \end{docspec}
-appears at the very top of the \textbf{m-file} and defines the main function. In this example, the main function is called \texttt{pokemon} (meaning the App is run by typing \texttt{>> Pokemon}). \uline{Remember that you do not have to edit any of this function.}
+which defines the main program function (here,  called \texttt{pokemon} and meaning the App is run by typing \texttt{>> Pokemon}). \\\uline{Remember that you do not have to edit any of this function.}
+\vspace{1mm}
 \item Next comes:
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% --- Executes just before Pok\'emon is made visible.}
 \\\textcolor{blue}{function} Pokemon\_OpeningFcn(hObject, eventdata, handles, varargin)
 \end{docspec}
 This is the function that is called just before the window is made visible and we'll edit it later in order to carry out some initial tasks (i.e. before the ballistics model itself runs).
+\vspace{1mm}
 \item Then:
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% --- Outputs from this function are returned to the command line.}
 \\\textcolor{blue}{function} varargout = Pokemon\_OutputFcn(hObject, eventdata, handles)
 \end{docspec} 
 which is mysteriously useless and \uline{we will not edit}.
+\vspace{1mm}
 \item The first actually useful automatically generated code is:
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% --- Executes on button press in pushbutton1.}
 \\\textcolor{blue}{function} pushbutton1\_Callback(hObject, eventdata, handles)
 \end{docspec} 
 This will contain the code that is executed when the 'Throw' (or 'Go') button ('\textsf{bushbutton1}') is pressed and will end up containing the complete ballistics model code.
+\vspace{1mm}
 \item The function code for when second button ('\textsf{bushbutton2}') is pressed appears in order after the function associated with '\textsf{bushbutton1}':
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% --- Executes on button press in pushbutton2.}
 \\\textcolor{blue}{function} pushbutton2\_Callback(hObject, eventdata, handles)
 \end{docspec} 
 We'll only make use of this towards the very end of this section is making the final refinements to the App.
+\vspace{1mm}
 \item Then, the third button ('\textsf{bushbutton3}'):
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% --- Executes on button press in pushbutton3.}
 \\\textcolor{blue}{function} pushbutton3\_Callback(hObject, eventdata, handles)
 \end{docspec} 
 This will contain more more than a command to close the App (as you have programmed previously).
+\vspace{1mm}
 \item The code that is called whenever the position of the first slider the appears:
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% --- Executes on slider movement.}
 \\\textcolor{blue}{function} slider1\_Callback(hObject, eventdata, handles)
 \end{docspec} 
+\vspace{1mm}
 \item This is then followed by a second function associated with \textsf{slider1} whose purpose is ... not obvious. Perhaps slider initialization? Regardless, we'll be ignoring the following code:
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% --- Executes during object creation, after setting all properties.}
 \\\textcolor{blue}{function} slider1\_CreateFcn(hObject, eventdata, handles)
 \end{docspec} 
+\vspace{1mm}
 \item The final code is the pair of functions for the 2nd slider (of which we'll only edit the first of these two functions (\texttt{slider2\_Callback})):
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% --- Executes on slider movement.}
@@ -3014,7 +3068,7 @@ This will contain more more than a command to close the App (as you have program
 \end{docspec} 
 \end{itemize}
 
-Before we move on, you could add your fist code to the \textsf{m-file} -- a close action if you click on the lower of the three \textsf{Push Buttons}. Refer to the previous sub-section and example to remind yourself how to do this. You are aiming to have the App window close when you click on \textsf{pushbutton3}, whose associated function is called \texttt{\textcolor{blue}{function} pushbutton3\_Callback}.
+Before we move on, you could add your first code to the \textsf{m-file} -- a close action if you click on the lower of the three \textsf{Push Buttons}. Refer to the previous sub-section and example to remind yourself how to do this. You are aiming to have the App window close when you click on \textsf{pushbutton3}, whose associated function is called \texttt{\textcolor{blue}{function} pushbutton3\_Callback}.
 
 Save the \textsf{m-file} and re-run the App by typing its name (e.g. \texttt{>> Pokemon}) and the command line (first closing any already open instances of it). The App window should now close when you click on the third button. In the GUI design editor, edit the 'value' of the \textsf{String} property of this \textsf{Push Button} so that it has a logical and vaguely meaningful label. 
 
@@ -3022,7 +3076,9 @@ Save the \textsf{m-file} and re-run the App by typing its name (e.g. \texttt{>> 
 \noindent\rule{4cm}{0.5pt}
 \vspace{-2mm}
 
-\newthought{\textit{\textbf{Part II}}} -- (graphics) initialization. Note that in this section, \uline{all} the code will go in \texttt{\textcolor{blue}{function} Pokemon\_OpeningFcn}, \uline{after} the following (automatically generated) lines:
+\newthought{\textit{\textbf{Part II}}} -- (graphics) initialization. 
+
+\noindent Note that in this section, \uline{all} the code will go in \texttt{\textcolor{blue}{function} Pokemon\_OpeningFcn}, \uline{after} the following (automatically generated) lines:
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% Choose default command line output for Pok\'emon}
 \\handles.output = hObject;
@@ -3032,13 +3088,13 @@ Save the \textsf{m-file} and re-run the App by typing its name (e.g. \texttt{>> 
 \\\% uiwait(handles.figure1);}
 \end{docspec}
 
-First, we'll read in a background image ('background.jpg' -- available for download from the  website, or pick your own) and then display it. We'll use the commands \texttt{imread} for reading in the graphics format (and converting it into something \textbf{MATLAB} prefers) and then \texttt{imshow} to display it. The first part is easy enough:
+\noindent First, we'll read in a background image ('background.jpg' -- available for download from the  website, \uline{or pick your own}) and then display it. We'll use the commands \texttt{imread} for reading in the graphics format (and converting it into something \textbf{MATLAB} prefers) and then \texttt{imshow} to display it. The first part is easy enough:
 \begin{docspec}
 img\_background = imread(\textcolor[rgb]{0.501961,0,1}{'background.jpg'});
 \end{docspec}
 The question then becomes 'where' to display it. You might not think there is even a question in this -- in the window! Except ... where in the window?
 
-We actually want the background image in the (currently) blank \textsf{Axes} area, not just anywhere in the \textsf{Figure window} (which also have various button etc. objects positioned in it). We need to find the ID of the \textsf{Axes} object and tell \textbf{MATLAB} that is 'where' to display it.\sidenote{Actually, it may work without worrying about this, but we'll need to be able to specify where to position other images later anyway.} We can get the \textit{handle} (ID) of the \textsf{Axes} object via:
+We actually want the background image in the (currently) blank \textsf{Axes} area, not just anywhere in the \textsf{Figure window} (which also have various button etc. objects positioned in it). We need to find the ID of the \textsf{Axes} object and tell \textbf{MATLAB} that is 'where' we want to display it.\sidenote{Actually, it may work without worrying about this, but we'll need to be able to specify where to position other images later anyway.} We can get the \textit{handle} (ID) of the \textsf{Axes} object via:
 \begin{docspec}
 h\_axes = findobj(\textcolor[rgb]{0.501961,0,1}{'Tag'},\textcolor[rgb]{0.501961,0,1}{'axes1'});
 \end{docspec}
@@ -3053,7 +3109,7 @@ h\_background = imshow(img\_background,\textcolor[rgb]{0.501961,0,1}{'Parent'},h
 \end{docspec}
 Try it (run the App). (The only problem with this is that \textbf{MATLAB} may completely fail to scale the image to fit the \textsf{Axes}. We'll fix this shortly.)
 
-While we're at it (editing \texttt{\textcolor{blue}{function} Pokemon\_OpeningFcn}), we can specify the axis range for plotting the position of the ball in the Axes object, and add a \texttt{hold on} for completeness. We may as well then also define the axis ranges (in \(m\)) as parameters (that we can use elsewhere).
+While we're at it (editing \texttt{\textcolor{blue}{function} Pokemon\_OpeningFcn}), we can specify the axis range for plotting the position of the ball in the Axes object (as you did previously), and add a \texttt{hold on} for completeness. We may as well then also define the axis ranges (in \(m\)) as parameters (that we can use elsewhere).
 
 The complete code (so far), at the end of the automatically generated code in \texttt{\textcolor{blue}{function} Pokemon\_OpeningFcn}, becomes:
 \begin{docspec}
@@ -3070,9 +3126,9 @@ The complete code (so far), at the end of the automatically generated code in \t
 \\h\_background = imshow(img\_background,\textcolor[rgb]{0.501961,0,1}{'Parent'},h\_axes, ...
 \\'Xdata',[0 x\_max],'Ydata',[0 y\_max]);
 \end{docspec}
-Now, as part of the call to \texttt{imshow}, the size and position of the image are explicitly prescribed (and the image scaled to completely fill the \textsf{axes} object).
+Here -- as part of the call to \texttt{imshow}, the size and position of the image are now explicitly prescribed (and the image scaled to completely fill the \textsf{axes} object).
 
-When you run all this, you should get Figure \ref{fig:chGUI-pokemon2}. 
+When you run all this, you should get Figure \ref{fig:chGUI-pokemon2} (or with alternative background). 
 
 \begin{marginfigure}[0.0in]
 \includegraphics[width=\linewidth]{chGUI-pokemon2.png}
@@ -3084,7 +3140,9 @@ Next, we want a Pok\'emon to throw the ball at! The load-in code (which can go \
 \begin{docspec}
 img\_eevee = imread(\textcolor[rgb]{0.501961,0,1}{'Eevee.png'});
 \end{docspec}
-(The image itself ('\textsf{Eevee.png}') can be downloaded from the website ... or download your own ...) There are two complications in using \texttt{imread}, however. To see what these complications are, after the \texttt{img\_eevee = } line, add the following:
+(the image itself ('\textsf{Eevee.png}') can be replaced with your own ...) 
+
+There are two complications in using \texttt{imread}, however. To see what these complications are, after the \texttt{img\_eevee = } line, add the following:
 \begin{docspec}
 h\_eevee = imshow(img\_eevee,\textcolor[rgb]{0.501961,0,1}{'Parent'},h\_axes);
 \end{docspec}
@@ -3119,20 +3177,23 @@ To cut a long story short, we can generalize the position and size of the Pok\'e
 \\h\_eevee = imshow(img\_eevee,\textcolor[rgb]{0.501961,0,1}{'Parent'},h\_axes,\textcolor[rgb]{0.501961,0,1}{'Xdata'},[x\_Pokemon\ldots
 \\ x\_Pokemon+dx\_Pokemon],\textcolor[rgb]{0.501961,0,1}{'Ydata'},[y\_Pokemon-dy\_Pokemon y\_Pokemon]);
 \end{docspec}
-Now giving you a small Pok\'emon -- in fact, 20\% of the \textsf{Axes} size as specified in the definition of the Pok\'emon size parameters, \texttt{dx\_Pok\'emon} and \texttt{dy\_Pokemon}. If you run this, you should get Figure \ref{fig:chGUI-Pokemon4}. (Note that because \textit{y} is measured downwards from the top in the GUI \textsf{Axes} object, for \textcolor[rgb]{0.501961,0,1}{\texttt{'Ydata'}}, we write  the \textit{y} min and amx values the other way around: \texttt{[y\_Pokemon-dy\_Pokemon y\_Pokemon]}.)
+Now giving you a small Pok\'emon -- in fact, 20\% of the \textsf{Axes} size as specified by the parameters: \texttt{dx\_Pok\'emon} and \texttt{dy\_Pokemon}.
+\\\noindent\uline{Remember that you can refer to the complete code to see how things fit together.}
+
+If you run this, you should get Figure \ref{fig:chGUI-Pokemon4}. (Note that because \textit{y} is measured downwards from the top in the GUI \textsf{Axes} object, for \textcolor[rgb]{0.501961,0,1}{\texttt{'Ydata'}}, we write  the \textit{y} min and max values the other way around: \texttt{[y\_Pokemon-dy\_Pokemon y\_Pokemon]}.)
 \begin{marginfigure}[0.0in]
 \includegraphics[width=\linewidth]{chGUI-Pokemon4.png}
 \caption{Template App with background image plus small Pok\'emon at bottom right.}
 \label{fig:chGUI-Pokemon4}
 \end{marginfigure}
 
-One final thing now is the background to the Pok\'emon image. The original format (png) is actually defined with a transparent background. \textbf{MATLAB} can make use of this with a small tweak to the code -- replacing the \texttt{img\_eevee = } line with:
+One final thing  is the background to the Pok\'emon image. The original format (png) is actually defined with a transparent background. \textbf{MATLAB} can make use of this with a small tweak to the code -- replacing the \texttt{img\_eevee = } line with:
 \begin{docspec}
-[img\_eevee, h\_map\_eevee, h\_alpha\_eevee] = imread('Eevee.png');
+[img\_eevee,h\_map\_eevee,h\_alpha\_eevee] = imread('Eevee.png');
 \end{docspec}
 which grabs additional graphics information and specifically about the transparency. And after the last line (\texttt{h\_eevee = }), add:
 \begin{docspec}
-set(h\_eevee, 'AlphaData', h\_alpha\_eevee);
+set(h\_eevee,'AlphaData',h\_alpha\_eevee);
 \end{docspec}
 which implements the transparent background and hopefully gives you Figure \ref{fig:chGUI-Pokemon5}.
 
@@ -3148,9 +3209,9 @@ which implements the transparent background and hopefully gives you Figure \ref{
 
 \newthought{\textit{\textbf{Part III}}} -- incorporating the ballistics model.
 
-Here -- almost all the code in this section will go into \texttt{\textcolor{blue}{function} \\\noindent pushbutton1\_Callback} -- the function that is executed when the first \textsf{Push Button} is clicked. But before any coding -- ensure that the text label associated with the first \texttt{Push Button} is appropriate for launching the ball ('Throw', 'Go!', whatever).\sidenote{Remember -- double-click on the \textsf{pushbutton1} object in the design editor and then find and edit the value of the \textbf{String} property.}
+\noindent Here -- almost all the code in this section will go into \texttt{\textcolor{blue}{function} \\\noindent pushbutton1\_Callback} -- the function that is executed when the first \textsf{Push Button} is clicked. But before any coding -- ensure that the text label associated with the first \texttt{Push Button} is appropriate for launching the ball ('Throw', 'Go!', whatever).\sidenote{Remember -- double-click on the \textsf{pushbutton1} object in the design editor and then find and edit the value of the \textbf{String} property.}
 
-Below is a simple rendition of the ballistics model. All that has been modified from a stand-alone \textsf{m-file} that would plot the trajectory of a ball, is that the creation of a figure (and associated \texttt{hold on}) is not necessary (because this has already bene done within the initialization function). either copy-paste your own version (and comment out the figure creation line), or add the below version.
+Below is a simple rendition of the ballistics model. All that has been modified from a stand-alone \textsf{m-file} that would plot the trajectory of a ball, is that the creation of a figure (and associated \texttt{hold on}) is not necessary (because this has already been done within the initialization function). Either copy-paste your own version (and comment out the figure creation line), or add the below version.
 
 \begin{docspecmargin}
 \% model constants
@@ -3189,7 +3250,7 @@ Below is a simple rendition of the ballistics model. All that has been modified 
 \\\textcolor{blue}{end}
 \end{docspecmargin}
 
-When you rn the complete App, and press the first \textsf{Push Button}, you should see the balls' trajectory plotted. Upside-down! WTF!?
+When you run the complete App, and press the first \textsf{Push Button}, you should see the balls' trajectory plotted. Upside-down! WTF!?
 
 Well, this does seem to be the coordinate system in this \textsf{Axes} object. We can fix this by subtracting the model calculated height (\texttt{y}) from the maximum y-axis value (\texttt{y\_max}) and adjust the \texttt{scatter} code line to:
 \begin{docspec}
@@ -3208,7 +3269,7 @@ to both the following functions
 \end{itemize}
 (before any of your other code in these files, but below anything that \textbf{MATLAB} generated automatically in the first place).
 
-It works, and in the right direction (for 'up'), but it is hardly \textbf{iTunes} grade App material. What we can do, is to replace the point plotted by \texttt{scatter}, with an image.
+It works(!) and in the right direction (for 'up'), but it is hardly \textbf{iTunes} grade App material. What we can do, is to replace the point plotted by \texttt{scatter}, with an image.
 
 At the top of \texttt{\textcolor{blue}{function} pushbutton1\_Callback} (after the \texttt{global} declarations) load in a ball image:
 \begin{docspec}
@@ -3226,7 +3287,7 @@ and finally, in place of \texttt{scatter ...}, write:
 \\ \ \ \ \ set(h\_ball, 'AlphaData', h\_alpha\_ball);
 \end{docspec}
 
-The first of these final two lines, displays the image given by the parameter (ID) \texttt{img\_ball}. It ensures it is displayed in the axes area pointed to by \texttt{h\_axes} (and because of this, you also have to define \texttt{x\_axes} as global\sidenote{Directly underneath the other two \texttt{global} definition lines AND in a similar position in the initialization function: \texttt{\textcolor{blue}{function} pushbutton1\_Callback }.}, i.e. \texttt{global h\_axes;}). Its size is \texttt{dx\_ball} by \texttt{dy\_ball}. Its \textit{x}-coordinate is simply \texttt{x} (hence the image goes from \texttt{x} to \texttt{x+dx\_ball}) and its \textit{y}-axis coordinate ... well, don' worry about it, after much trial-and-error, it works.
+The first of these final two lines, displays the image given by the parameter (ID) \texttt{img\_ball}. It ensures that it is displayed in the axes area pointed to by \texttt{h\_axes} (and because of this, you also have to define \texttt{x\_axes} as global\sidenote{Directly underneath the other two \texttt{global} definition lines AND in a similar position in the initialization function: \texttt{\textcolor{blue}{function} pushbutton1\_Callback }.}, i.e. \texttt{global h\_axes;}). Its size is \texttt{dx\_ball} by \texttt{dy\_ball}. Its \textit{x}-coordinate is simply \texttt{x} (hence the image goes from \texttt{x} to \texttt{x+dx\_ball}) and its \textit{y}-axis coordinate ... well, don' worry about it, after much trial-and-error, it works.
 Now you should have something like Figure \ref{fig:chGUI-Pokemon6} when you run it.
 
 \begin{marginfigure}[0.0in]
@@ -3235,7 +3296,7 @@ Now you should have something like Figure \ref{fig:chGUI-Pokemon6} when you run 
 \label{fig:chGUI-Pokemon6}
 \end{marginfigure}
 
-To finish this section off, we'll improve how the trajectory f the ball is displayed. Firstly, we could add a delay between each addition of the ball image, rather than them all sort of appear at once. After the \texttt{set ...} line, add:
+To finish this section off, we'll improve how the trajectory of the ball is displayed. Firstly, we could add a delay between each addition of the ball image, rather than them all sort of appear at once. After the \texttt{set ...} line, add:
 \begin{docspec}
 \ \ \ \ pause(0.005);
 \end{docspec}
@@ -3253,9 +3314,9 @@ Now when you run it you should see a single ball image that follows the  traject
 
 \newthought{\textit{\textbf{Part IV}}} -- utilizing the sliders.
 
-So far it is not much of a game -- the values of the parameters determining the initial speed and angle of the ball are set in the code. You could always edit the code, save, and re-run to replay the game with a different throw, but ... really(?)
+\noindent So far it is not much of a game -- the values of the parameters determining the initial speed and angle of the ball are set in the code. You could always edit the code, save, and re-run to replay the game with a different throw, but ... really(?)
 
-The \textsf{Sliders} are there to allow you to adjust the two key parameter values and the 'Throw' (/'Go') button can be re-clicked on to then re-run the game. The \textsf{Sliders} are set up such that when you move the slider, its value changes. In designing the GUI and creating the objects you have already set the min and max values of the \textsf{Sliders} to something reasonable. What remains is to obtain the value of each \textsf{Slider} and pass that to your ballistics model.
+The \textsf{Sliders} are there to allow you to adjust the two key parameter values and the 'Throw' (/'Go') button can be re-clicked on to then re-run the game. The \textsf{Sliders} are set up such that when you move the slider, its value changes. In designing the GUI and creating the objects, you have already set the min and max values of the \textsf{Sliders} to something reasonable. What remains is to obtain the value of each \textsf{Slider} and pass that to your ballistics model.
 
 The first step is to read the new \textsf{Slider} value when the slider is moved. Taking the example of the first \textsf{Slider} ('\textsf{slider1}') which controls the initial speed of the ball -- we first need to request the handle (ID) of this \textsf{Slider}. As before, we use the \texttt{findobj} function:
 \begin{docspec}
@@ -3287,7 +3348,7 @@ Write the analogous four lines of code for the other Slider, which will go in \t
 
 Again -- save and test what you have so far. This should now be two \textsf{Sliders} that are linked to two \textsf{Static text} boxes such that when the slider is moved, the new values are displayed. 
 
-There is one final step to take. If you change either or both \textsf{Slider} values and click on 'Throw' /'Go', the trajectory of the ball is the same as before -- you are not actually changing the parameter values used to initialize the ballistics model yet. Recall that variables within \textit{functions} are \textit{private} -- they cannot be 'seen' outside of the function their value is set in. Unless you declare them as \texttt{global} variables.
+There is one final step to take -- if you change either or both \textsf{Slider} values and click on 'Throw' /'Go', the trajectory of the ball is currently still the same as before -- you are not actually changing the parameter values used to initialize the ballistics model yet. Recall that variables within \textit{functions} are \textit{private} -- they cannot be 'seen' outside of the function their value is set in. Unless you declare them as \texttt{global} variables.
 
 So, in each \textsf{Slider} function, you need to declare the respective parameter (\texttt{s0} or \texttt{theta0}) as \texttt{global}. This will need to be the first line of the code (after the comment lines and before the four lines of code you inserted). You will also need to add the global declarations at the start of the \textsf{pushbutton1} code where your model lives (\texttt{\textcolor{blue}{function} pushbutton1\_Callback(hObject, eventdata, handles)}):
 \begin{docspec}
@@ -3316,7 +3377,7 @@ At the end of the code in \texttt{\textcolor{blue}{function} Pokemon\_OpeningFcn
 \\h = findobj(\textcolor[rgb]{0.501961,0,1}{'Tag'},\textcolor[rgb]{0.501961,0,1}{'text2'});
 \\set(h,\textcolor[rgb]{0.501961,0,1}{'String'},[num2str(theta0)]);
 \end{docspec}
-which is pretty well much just an amalgamation of the code you have added to the two \textsf{Slider} callback function. The last final piece is to remember that the initial Slider values you read and set \texttt{s0} and \texttt{theta0} on the basis of, cannot be seen outside of this function. So at the top, along with the other \texttt{global} statements, make \texttt{s0} and \texttt{theta0} global to.
+which is pretty well much just an amalgamation of the code you have added to the two \textsf{Slider} callback function. The last final piece is to remember that the initial Slider values you read and set \texttt{s0} and \texttt{theta0} on the basis of, cannot be seen outside of this function. So at the top, along with the other \texttt{global} statements, \uline{make \texttt{s0} and \texttt{theta0} global}.
 
 Note that if you do not like the new defaults for  \texttt{s0} and \texttt{theta0}, you can always edit the properties of the \textsf{Sliders} in the GUI design editor window thing.\sidenote{Equally, you could have coded in defaults and then set the \textbf{Slider} values to be these defaults when the App starts up. The process is basically exactly the same as for setting the \textbf{Static text} box string values.}
 
@@ -3326,7 +3387,7 @@ Note that if you do not like the new defaults for  \texttt{s0} and \texttt{theta
 
 \newthought{\textit{\textbf{Part V}}} -- pok\'eball/Pok\'emon collision detection.
 
-How are you going to tell if the throw is successful or not? Remember earlier -- you detected if the height of the ball fell below ground level and used this to exits the loop (because no more calculations were necessary):
+\noindent Remember earlier -- you detected if the height of the ball fell below ground level and used this to exits the loop (because no more calculations were necessary):
 \begin{docspec}
 \ \ \ \    \textcolor{blue}{if} (y < 0.0)\\
 \ \ \ \ \ \ \ \        \textcolor{blue}{break};\\
@@ -3372,16 +3433,34 @@ If this condition is met, the game is over. You might then:
 
 \newthought{\textit{\textbf{Part VI}}} -- final game refinements.
 
-Various refinements that come to mind and that you might try and implement:
+\noindent Various refinements that come to mind and that you might try and implement:
+\vspace{-2mm}
 
 \begin{itemize}[noitemsep]
+\vspace{1mm}
 \item Upon clicking 'New Game', you might place the Pok\'emon in a different place. Perhaps larger or smaller than originally. Both these settings could be made random.
-\item In a new game, you might display a different Pok\'emon. Which Pok\'emon gets displayed, could also be random.
-\item Keep score (how many 'catches') as well as how many tries total.
+\\(This is already included in the complete example code.)
+\vspace{1mm}
+\item In a new game, you might display a different Pok\'emon. Which Pok\'emon gets displayed, could also be random. 
+\\(The \textbf{MATLAB} function \texttt{rand} creates a random number between 0 and 1, useful for scaling size. A simple change over in Pok\'emon would be to create a variable that was true or false, to control whether one or other image was displayed, and could be flipped in state (\texttt{var = \(\sim\)var}) after each catch.)
+\vspace{1mm}
+\item Keep score (of how many 'catches') as well as how many tries total.
 \\This would require two new \textsf{Static Text} box objects in the GUI.
+\vspace{1mm}
 \item You could also keep a high score ... saving this value when you close the App, and loading it when you start it up.
-\\(e.g. simply saving and loading an integer from a \textsf{.mat} file.
+\\(e.g. simply saving and loading an integer from a \textsf{.mat} file)
 \\Harder, is to add the ability to enter (and remember) the initials of the person with the high score ...
+\vspace{1mm}
+\item Rather than using sliders, you could enter in the initial speed and throw angle as values. 
+\\For this, you will need a pair of Edit Text boxes. You need to read in whatever the text is that was entered into these boxes when the thrown button is clicked ... and convert to a number -- see \textbf{MATLAB} help on:
+\begin{docspec}
+str2double
+\end{docspec}
+(You could refine this further by detecting a non-number (\texttt{str2double} will return a \texttt{NaN} if the string of characters does not form a number) and somehow requesting the user tries again -- see \textbf{MATLAB} help on \texttt{msgbox}.)
+\vspace{1mm}
+\item Change the physics!!
+\\You could add a term to account for air resistance -- as the ball travels through the air, friction will act to decelerate the ball.
+\\(See Optional section in earlier chapter on 'ballistics'.)
 \end{itemize}
 
 %------------------------------------------------
