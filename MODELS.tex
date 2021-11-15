@@ -553,11 +553,11 @@ You can then  write:
 \begin{docspec}
 Fin = ((1-albedo)*solar\_constant)/4;
 \end{docspec}
-This pretty well much as you would write as math (on paper) with the exception of the variables having much longer names than you would typically use in math (where often Greek characters, with or without sub- or super-scripts, are used). Here, \texttt{albedo} and \texttt{solar\_constant} are variables holding the values of planetary albedo and solar constant, and the result of the calculation is assigned to a variable \texttt{Fin}. For completeness, you would define these values, e.g.
+This pretty well much as you would write as math (on paper) with the exception of the variables having much longer names than you would typically use in math (where often Greek characters, with or without sub- or super-scripts, are used). Here, \texttt{albedo} and \texttt{solar\_constant} are variables holding the values of planetary albedo and solar constant, and the result of the calculation is assigned to a variable \texttt{Fin}. For completeness, you might define these values near the start of your program, e.g.
 \begin{docspec}
 albedo = 0.3; \textcolor[rgb]{0,0.501961,0}{\% initial albedo assumption}\\
 solar\_constant\ = 1368.0; \textcolor[rgb]{0,0.501961,0}{\% set modern solar constant}\\
-Fin = ((1-albedo)*solar\_constant)/4; \textcolor[rgb]{0,0.501961,0}{\% energy in}
+
 \end{docspec}
 (and you might add to the comments, to include the units for each variable).
 
@@ -566,7 +566,7 @@ Fin = ((1-albedo)*solar\_constant)/4; \textcolor[rgb]{0,0.501961,0}{\% energy in
 sb\_constant = 9.9999E19;
 \end{docspec}
 
-\noindent ... and \uline{you will need to be careful with units of this} (Wikipedia, for example, will provide the Stefan-Boltzmann in a variety of units). Use a 'dimension' check to see if you have the units correct. This works as follows:
+\noindent ... and \uline{you will need to be careful with units of this} (\textbf{Wikipedia}, for example, will provide the Stefan-Boltzmann in a variety of units). Use a 'dimension' check to see if you have the units correct. This works as follows:
 
 In the equation:
 \begin{docspecnormal}
@@ -602,7 +602,7 @@ x = 9.9999*10\(^{\wedge}\)19
 \noindent\rule{4cm}{0.5pt}
 \vspace{2mm}
 
-\noindent So coming back to what exactly you need to do in your \textbf{m-file} -- writing down in \textbf{MATLAB} an equation for \(T\) (\texttt{temp}) -- you can either write this out in full in a single line, or make use of the code for \texttt{Fin}, and build on that. For the latter option, knowing that \(F_{in} = F_{out}\), you should be able to see from the equation for \(F_{out}\), that if you divide \(F_{in}\) by \(\left(\epsilon\cdot\sigma\right)\) (or divide by \(\epsilon\), then divide by \(\epsilon\)), that you will be left with the 4th power of \(T\). You then need to take the \(\frac{1}{4}\) root of that, which you can write in \textbf{MATLAB} as:
+\noindent So coming back to what exactly you need to put in your \textbf{m-file} (\uline{see Figure \ref{fig:ch8-schematic-scr1}}!!!) -- when writing down in \textbf{MATLAB} an equation for \(T\) (\texttt{temp}), you can either write this out in full in a single line, or make use of the code for \texttt{Fin}, and build on that. For the latter option, knowing that \(F_{in} = F_{out}\), you should be able to see from the equation for \(F_{out}\), that if you divide \(F_{in}\) by \(\left(\epsilon\cdot\sigma\right)\) (or divide by \(\epsilon\), then divide by \(\epsilon\)), that you will be left with the 4th power of \(T\). You then need to take the \(\frac{1}{4}\) root of that, which you can write in \textbf{MATLAB} as:
 \begin{docspec}
 temp = temp4\(^{\wedge}\)0.25;
 \end{docspec}
@@ -619,6 +619,7 @@ For now in your \textit{script} \textbf{m-file} -- prescribe the value of \(S\) 
 \vspace{2mm}
 
 \noindent Now run it.
+\vspace{1mm}
 
 If you did not screw-up the units on the Stefan-Boltzmann constant, then you should have an equilibrium (global, annual mean) surface temperature of around 14\degree C\sidenote{Remembering to convert from Kelvin (\(K\)) to degrees Centigrade (\degree C). In the equation you have re-arranged, \(T\) is in units of Kelvin (\(K\)).} ... If not -- debug. Assuming that the code ran without errors but gave a nutty answer, try the following fault-finding sequence:
 \begin{enumerate}[noitemsep]
@@ -663,7 +664,7 @@ where \texttt{OUT} represents one (or more) variables that are passed out (the '
 \item[] \(T \rightarrow\) \texttt{temp}
 \end{itemize}
 (or whatever you like, as long as the names help you in the coding and debugging).
-Or if you prefer -- create a new (empty) \textit{function} (select \textsf{New} and then \textsf{Function} from the \textbf{MATLAB} toolbar/menu-bar) and then copy-paste in the contents of \textsf{scr\_1.m}. Note that in your new \textit{function} version of the program, you no longer define  the values for \texttt{solar\_constant} and \texttt{albedo} in the \textbf{m-file} -- instead, these values are passed into the \textit{function} when you call it. For instance, if at the top of the \textit{function} (see side-note) you  defined:
+Or if you prefer -- create a new (empty) \textit{function} (select \textsf{New} and then \textsf{Function} from the \textbf{MATLAB} toolbar/menu-bar) and then copy-paste in the contents of \textsf{scr\_1.m}. \uline{Remember that in your  \textit{function} version of the program, you no longer define  the values for \texttt{solar\_constant} and \texttt{albedo}} in the \textbf{m-file} -- instead, these values are passed into the \textit{function} when you call it. For instance, if at the top of the \textit{function} (see side-note) you  defined:
 \begin{docspec}
 \textcolor{blue}{function} [temp] = fun\_1(solar\_constant, albedo)
 \end{docspec}
@@ -687,13 +688,13 @@ Try playing with the \textit{function} in the same way as before, but now passin
 
 In this  sub-subsection, and as a precursor to simulating how Earths surface temperature may have changed through geological time, you are going to code up a new \textit{function} that calculates (and returns) the value of the solar constant as a function of time.
 
-So far you only have a function equating solar constant (\(S\)) to temperature (\(T\)). What you need is some way of equating time (\(t\)) to the value of the solar constant at that time \(S_{(t)}\) (which you can then turn into temperature). We'll remedy this toot sweet.
+So far you only have a \textit{function} equating solar constant (\(S\)) to temperature (\(T\)). What you need is some way of equating time (\(t\)) to the value of the solar constant at that time \(S_{(t)}\) (which you can then turn into temperature). We'll remedy this toot sweet.
 
 Start by creating a new  (blank) \textbf{m-file} and define it as a \textit{function} that takes in a variable for time, \(t\) (in units of \(Ga\)) and spits out  (aka, returns) the calculated value of \(S_{(t)}\) (\(Wm^{-2}\)) (this \textit{function} will be '\texttt{fun\_2}' in the on-going notation and obviously saved as \textsf{fun\_2.m}). i.e., your \textit{function} definition (at the top of the \textbf{m-file}) will look something like:
 \begin{docspec}
 \textcolor{blue}{function} [St] = fun\_2(t)
 \end{docspec}
-where now I am shortening the variable name for the solar constant (to '\texttt{S}') and then adding a '\texttt{t}' to remind me that it is a time-dependent value (hence \texttt{St} rather than e.g. \texttt{solar\_constant\_time}). The code structure you are aiming for is illustrated in Figure \ref{fig:ch8-schematic-fun2}.
+where now I am shortening the variable name for the solar constant (to '\texttt{S}') and then adding a '\texttt{t}' to remind me that it is a time-dependent value (hence \texttt{St}, although if you prefer, you can spall this out, e.g. \texttt{solar\_constant\_time}). The code structure you are aiming for is illustrated in Figure \ref{fig:ch8-schematic-fun2}.
 
 \marginnote[-3.875in]{\begin{mdframed}[backgroundcolor=light-blue, roundcorner=10pt,leftmargin=1, rightmargin=1, innerleftmargin=5, innerrightmargin=5, innertopmargin=5,innerbottommargin=5, outerlinewidth=1, linecolor=light-gray]
 \textbf{Solar constant}
@@ -776,6 +777,7 @@ Start by creating a new (yet another blank \textbf{m-file}) \textit{script} ('\t
 \setlength{\itemindent}{.2in}
 \vspace{1mm}
 \item Pass to your solar constant \textit{function} (\texttt{fun\_2.m}) your  variable containing the current value of time (\texttt{t}), and obtain the corresponding value of the solar constant (\(S_{(t)}\)), and assign to a variable e.g. \texttt{St}.
+\vspace{1mm}
 \\Note that you do not copy-paste the \textsf{fun\_2.m} code into \textsf{scr\_4.m} ... you simply call the \textit{function} within the loop exactly as per you did at the command line (but assign the result to a variable), e.g.
 \begin{docspec}
 St = fun\_2(t);
@@ -806,7 +808,7 @@ Once the loop has completed, plot surface temperature (\textit{y}-axis) as a fun
 
 Likely bug possibilities include mistakes with nested parentheses \texttt{(())}, units (e.g. \(K\) vs. \(\degree C\)), and time, which  should run forward from zero (the formation of the Sun). A schematic of the program structure is shown in Figure \ref{fig:ch8-schematic-scr4fun1fun2} to aid you.
 
-Assuming that you have managed something like Figure \ref{fig:ch8-ebm-solarconst}\sidenote[][-1.0in]{Note that a line has been added to highlight \(t=0\) (i.e. the present-day) -- see \docenv{line} (see earlier). This plot also has an altered time-axis and time is plotted relative to now -- see below.} -- what strikes you, in light of (hopefully) what you know about the past history of climate and evolution of life on this planet, about your model projection (for the past)? What is 'missing'?
+Assuming that you have managed something like Figure \ref{fig:ch8-ebm-solarconst}\sidenote[][-0.75in]{Note that a line has been added to highlight \(t=0\) (i.e. the present-day) -- see \docenv{line} (see earlier). This plot also has an altered time-axis and time is plotted relative to now -- see below.} -- what strikes you, in light of (hopefully) what you know about the past history of climate and evolution of life on this planet, about your model projection (for the past)? What is 'missing'?
 
 \begin{marginfigure}[-0.0in]
 \includegraphics[width=\linewidth]{ch8-ebm-solarconst.eps}
