@@ -982,7 +982,7 @@ during initialization before the loop starts, and then with the loop:
 i.e. concatenating a vector \texttt{[S T]}  (and hence a complete row) to the end of the matrix \textbf{data}.
 \end{enumerate}
 
-\begin{marginfigure}[-0.0in]
+\begin{marginfigure}[-1.75in]
 \includegraphics[width=\linewidth]{ch8-schematic-scr2fun1.eps}
 \caption{Schematic structure of the model configured to carry out a single parameter sensitivity study.}
 \label{fig:ch8-schematic-scr2fun1}
@@ -994,6 +994,12 @@ Finally, at the end of your program (after the end of the loop), you can now plo
 
 The structure of your code should look like Figure \ref{fig:ch8-schematic-scr2fun1}. and your resulting figure (depending on the range you assume for \(S\)), something like Figure \ref{fig:ch8-sens1D}.
 
+\begin{marginfigure}[-0.5in]
+\includegraphics[width=\linewidth]{ch8-sens1D.eps}
+\caption{Sensitivity of global mean surface temperature vs. solar constant (mean surface albedo held constant at an albedo value of 0.3).}
+\label{fig:ch8-sens1D}
+\end{marginfigure}
+
 %------------------------------------------------
 %
 \newpage
@@ -1001,12 +1007,6 @@ The structure of your code should look like Figure \ref{fig:ch8-schematic-scr2fu
 \subsection{Parameter sensitivity experiments using the EBM -- \#2}
 
 In this final sub-subsection, we'll extend the parameter sensitivity analysis of your model to 2D, assuming for instance that you are  now interested in  how \(T\)  varies both as a function of solar constant as well as, as a function of \(\alpha\) (surface albedo). You'll need to vary both \(S\) and \(\alpha\), and in all combinations of the two in order to achieve this. In fact, you'll do this in a grid pattern, with \(S\) increasing in steps on one axis (as before), and \(\alpha\) on the other.
-
-\begin{marginfigure}[-0.5in]
-\includegraphics[width=\linewidth]{ch8-sens1D.eps}
-\caption{Sensitivity of global mean surface temperature vs. solar constant (mean surface albedo held constant at an albedo value of 0.3).}
-\label{fig:ch8-sens1D}
-\end{marginfigure}
 
 Hopefully, you might have guessed that you'll need a \textit{nested loop}(?) -- one loop going through all possible values of \(\alpha\), \textit{for each and every possible value of \(S\)}?? i.e. in a structure like:
 \vspace{-1mm}\begin{docspec}
