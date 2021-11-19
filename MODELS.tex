@@ -557,11 +557,11 @@ This pretty well much as you would write as math (on paper) with the exception o
 \begin{docspec}
 albedo = 0.3; \textcolor[rgb]{0,0.501961,0}{\% initial albedo assumption}\\
 solar\_constant\ = 1368.0; \textcolor[rgb]{0,0.501961,0}{\% set modern solar constant}\\
-
 \end{docspec}
-(and you might add to the comments, to include the units for each variable).
+(In the comments, units for each variable are added as a reminder.)
+\vspace{1mm}
 
-\noindent For writing out the \(F_{out}\) part of the equation in code, you will need to find (from the Internet?) the value of the (Stefan-Boltzmann) constant. When you have found this, assign this value\footnote{Obviously, in this example, this is NOT the actual value ...} to a variable, e.g.
+\noindent For writing out the \(F_{out}\) part of the equation in code, you will need to find (from the Internet?) the value of the (Stefan-Boltzmann) constant. Assign this value\footnote{Obviously, in this example, this is NOT the actual value ...} to a variable, e.g.
 \begin{docspec}
 sb\_constant = 9.9999E19;
 \end{docspec}
@@ -582,7 +582,7 @@ Also note in the context of the Stefan-Boltzmann constant, \(\sigma\), how scien
 \begin{docspecnormal}
 \(x = 9.9999\times 10^{19}\)
 \end{docspecnormal}
-in \textbf{MATLAB} you would write:
+in \textbf{MATLAB} (don't actually type this!) you would write:
 \begin{docspec}
 x = 9.9999E19
 \end{docspec}
@@ -602,7 +602,7 @@ x = 9.9999*10\(^{\wedge}\)19
 \noindent\rule{4cm}{0.5pt}
 \vspace{2mm}
 
-\noindent So coming back to what exactly you need to put in your \textbf{m-file} (\uline{see Figure \ref{fig:ch8-schematic-scr1}}!!!) -- when writing down in \textbf{MATLAB} an equation for \(T\) (\texttt{temp}), you can either write this out in full in a single line, or make use of the code for \texttt{Fin}, and build on that. For the latter option, knowing that \(F_{in} = F_{out}\), you should be able to see from the equation for \(F_{out}\), that if you divide \(F_{in}\) by \(\left(\epsilon\cdot\sigma\right)\) (or divide by \(\epsilon\), then divide by \(\epsilon\)), that you will be left with the 4th power of \(T\). You then need to take the \(\frac{1}{4}\) root of that, which you can write in \textbf{MATLAB} as:
+\noindent So coming back to what exactly you need to put in your \textbf{m-file} (\uline{see Figure \ref{fig:ch8-schematic-scr1}}!!!) -- when writing down in \textbf{MATLAB} an equation for \(T\) (\texttt{temp}), you can either write this out in full in a single line, or make use of the code for \texttt{Fin}, and build on that. For the latter option, knowing that \(F_{in} = F_{out}\), you should be able to see from the equation for \(F_{out}\), that if you divide \(F_{in}\) by \(\left(\epsilon\cdot\sigma\right)\) (or divide by \(\epsilon\), then divide by \(\epsilon\)), that you will be left with the 4th power of \(T\). You then need to take the \(\frac{1}{4}\) root of that, which you can write (but don't type it yet!)\ in \textbf{MATLAB} as:
 \begin{docspec}
 temp = temp4\(^{\wedge}\)0.25;
 \end{docspec}
@@ -612,7 +612,9 @@ temp = temp4\(^{\wedge}\)(1/4);
 \end{docspec}
 (where I am assuming that temp4 is the partially re-arranged equation that gives the 4th power of \(T\)).
 
-For now in your \textit{script} \textbf{m-file} -- prescribe the value of \(S\) (variable: \texttt{solar\_constant}) -- for which the modern value is 1368 Wm\(^{-2}\) (\(S_{0}\)) as well as the value of planetary albedo (\(\alpha=0.3\), variable: \texttt{albedo}) -- somewhere near the start of the program (see Figure \ref{fig:ch8-schematic-scr1}).
+So now go and write in your script, what \(T\) (\texttt{temp}) is in terms of all the other parameters.
+
+In your \textit{script} \textbf{m-file} -- prescribe the value of \(S\) (variable: \texttt{solar\_constant}) -- for which the modern value is 1368 Wm\(^{-2}\) (\(S_{0}\)) as well as the value of planetary albedo (\(\alpha=0.3\), variable: \texttt{albedo}) -- somewhere near the start of the program (see Figure \ref{fig:ch8-schematic-scr1}).
 
 \vspace{1mm}
 \noindent\rule{4cm}{0.5pt}
@@ -1006,7 +1008,7 @@ The structure of your code should look like Figure \ref{fig:ch8-schematic-scr2fu
 
 \subsection{Parameter sensitivity experiments using the EBM -- \#2}
 
-In this final sub-subsection, we'll extend the parameter sensitivity analysis of your model to 2D, assuming for instance that you are  now interested in  how \(T\)  varies both as a function of solar constant as well as, as a function of \(\alpha\) (surface albedo). You'll need to vary both \(S\) and \(\alpha\), and in all combinations of the two in order to achieve this. In fact, you'll do this in a grid pattern, with \(S\) increasing in steps on one axis (as before), and \(\alpha\) on the other.
+In this final sub-subsection, we'll extend the parameter sensitivity analysis of your climate model to 2D, assuming for instance that you are  now interested in  how \(T\)  varies both as a function of solar constant as well as, as a function of \(\alpha\) (surface albedo). You'll need to vary both \(S\) and \(\alpha\), and in all combinations of the two in order to achieve this. In fact, you'll do this in a grid pattern, with \(S\) increasing in steps on one axis (as before), and \(\alpha\) on the other.
 
 Hopefully, you might have guessed that you'll need a \textit{nested loop}(?) -- one loop going through all possible values of \(\alpha\), \textit{for each and every possible value of \(S\)}?? i.e. in a structure like:
 \vspace{-1mm}\begin{docspec}
