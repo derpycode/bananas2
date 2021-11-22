@@ -1582,7 +1582,7 @@ x_{(t-\Delta t)}=x_{(t)} - \Delta x\cdot\frac{\partial x}{\partial t}\ + \frac{\
 
 \section{Catch the ball (ballistics and simulating trajectories)}
 
-In considering dynamic, 'time-stepping' representations of physical (/biogeochemical) systems, we'll start with a simple, ballistics example -- that of the trajectory of a thrown ball.
+In considering dynamic, 'time-stepping' representations of geophysical (/biogeochemical) systems, we'll start with a simple, ballistics example -- that of the trajectory of a thrown ball.
 
 \begin{marginfigure}[0.0in]
 \includegraphics[width=\linewidth]{ch9-ball.png}
@@ -1597,7 +1597,7 @@ The system we'll consider is shown schematically in Figure \ref{fig:ch9-ball}. I
 \item The ball is thrown with an initial speed \(s_{0}\) (\(ms^{-1}\)).
 \item The ball is thrown at an initial angle \(\phi\) with respect to the horizontal.
 \end{enumerate}
-We'll neglect any air desistence or spin imparted to the ball, and for the purpose of calculating its height, we'll ignore its diameter, i.e. we'll consider that the ball is level with the ground when its centre is at height zero. Over and above this, you'll only need to know the gravitational constant (i.e. gravitational acceleration): \(g=9.81 ms^{-1}\) (i.e. the ball is being thrown on an Earth-like planet close to sealevel).
+We'll neglect any air desistence or spin imparted to the ball, and for the purpose of calculating its height, we'll ignore its diameter, i.e. we'll consider that the ball is level with the ground when its centre is at height zero. Over and above this, you'll only need to know  gravitational  acceleration at the surface of Earth: \(g=9.81 ms^{-2}\) (i.e. the ball is being thrown on an Earth-like planet close to sealevel).
 
 To simply things and the construction of the code and encapsulation of the physics of the model, we'll break it down into 4 steps:
 
@@ -1875,21 +1875,33 @@ Now it has all got really trippy. If you tell it no different, \texttt{MATLAB} i
 
 \newpage 
 
-\newthought{\textbf{\textcolor{red}{OPTIONAL}} -- Also --} try turning your script into a function so that you do not need to edit the values of \(s_{0}\) and \(\theta\) in the code, but pass them into the program as parameters instead (the function needs not return anything however).
+\newthought{\textbf{\textcolor{red}{OPTIONAL}} -- Also --} try turning your script into a \textit{function} so that you do not need to edit the values of \(s_{0}\) and \(\theta\) in the code, but pass them into the program as parameters instead (the \textit{function} needs not return anything however).
 
 \vspace{1mm}
 \noindent\rule{4cm}{0.5pt}
-\vspace{2mm}
+\vspace{1mm}
+
+\newthought{\textbf{\textcolor{red}{OPTIONAL}}} -- Find out how far the same ball, through with the same initial speed and angle, travels on:
+\vspace{1mm}
+\begin{itemize}[noitemsep]
+\item The Moon -- \(g=1.625ms^{-2}\)
+\item Mecury -- \(g=3.7ms^{-2}\)
+\item The surface of a neutron star -- \(g=2.0 \times 10^{12}ms^{-2}\) \sidenote[][-0.5in]{You will need a MUCH\ MUCH shorter time-step ...}
+\end{itemize}
+
+\vspace{1mm}
+\noindent\rule{4cm}{0.5pt}
+\vspace{1mm}
 
 \noindent Having developed some visualization for the trajectory of the ball, this is a good point to experiment with the length of the time-step and determine at what point (time-step duration) the numerical approximation starts to break down -- i.e. as compared to a simulation with a very short time-step (or an analytical solution), when (what longer time-step duration) does the trajectory start to visually differ (and the distance travelled before the ball hits the ground, change)? e.g. Figure \ref{fig:ch9-ball_uv2} illustrates a \(0.1s\) time-step and Figure \ref{fig:ch9-ball_uv3} a \(0.2s\) time-step (contrast with Figure \ref{fig:ch9-ball_uv}).
 
-\begin{marginfigure}[-0.0in]
+\begin{marginfigure}[-2.25in]
 \includegraphics[width=\linewidth]{ch9-ball_uv2.eps}
 \caption{Trajectory of a ball (with a poor time-step choice).}
 \label{fig:ch9-ball_uv2}
 \end{marginfigure}
 
-\begin{marginfigure}[-0.0in]
+\begin{marginfigure}[-0.25in]
 \includegraphics[width=\linewidth]{ch9-ball_uv3.eps}
 \caption{Trajectory of a ball (even poorer time-step choice).}
 \label{fig:ch9-ball_uv3}
@@ -1899,9 +1911,9 @@ Now it has all got really trippy. If you tell it no different, \texttt{MATLAB} i
 \noindent\rule{4cm}{0.5pt}
 \vspace{2mm}
 
-\noindent If you are keen ... you can make more of an 'animation' out of the ball trajectory plotting. One trick would be to re-plot the position of the ball a second time, but now in white (hence covering up the previous drawing). Better is to ask \textbf{MATLAB} to delete the last ball object.
+\noindent You can also make more of an 'animation' out of the ball trajectory plotting. One trick would be to re-plot the position of the ball a second time, but now in white (hence covering up the previous drawing). Better is to ask \textbf{MATLAB} to delete the last ball object.
 
-When you call \texttt{scatter} as a function, a \textit{handle} is returned that is the ID of the points plotted. You can use this ID to delete the point again! e.g. close all the currently open windows and try the following:
+When you call \texttt{scatter} as a function, a \textit{handle} is returned that is the ID of the points plotted. You can use this ID to delete the point! e.g. close all the currently open windows and try the following:
 \begin{docspec}
 >> h=scatter(1,2);
 \end{docspec}
@@ -1918,8 +1930,8 @@ If, in your loop, after updating the position of the ball, you have:
 \ \ \ pause(0.025);\\
 \ \ \ delete(h);
 \end{docspecmargin}
-you should see a red ball (with a black outline) smoothly sailing across the screen.\sidenote[][-1.0in]{You could make the animation a little smoother by decreasing the time-step and also playing about with the delay (\texttt{pause}).}
-\sidenote[][-0.25in]{
+you should see a red ball (with a black outline) smoothly sailing across the screen.\sidenote[][-2.0in]{You could make the animation a little smoother by decreasing the time-step and also playing about with the delay (\texttt{pause}).}
+\sidenote[][-1.25in]{
 A slight complication here as that as it stands, the code will not work because in the first time around the loop, when you get to \texttt{delete(h)}, \textbf{MATLAB} is unhappy because the \textit{handle} \texttt{h} has not yet been defined anywhere.
 The easiest way to fix this is outside the loop, to plot the initial position of the ball (and obtain its \textit{handle}). e.g.:
 \begin{docspecmargin}
