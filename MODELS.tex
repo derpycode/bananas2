@@ -1575,9 +1575,7 @@ x_{(t-\Delta t)}=x_{(t)} - \Delta x\cdot\frac{\partial x}{\partial t}\ + \frac{\
 \noindent which unlike the forwards and backwards operators, is 2nd order accurate. This is know as the centered difference operator. Effectively, it is just saying that the gradient of the function at time \(t\) (\(\frac{dx}{dt}\)), can be approximated by the average of the gradient between time \(t\) and time \(t-1\), and between  time \(t\) and time \(t+1\).
 
 %------------------------------------------------
-
 \newpage
-
 %------------------------------------------------
 
 \section{Catch the ball (ballistics and simulating trajectories)}
@@ -1595,7 +1593,7 @@ The system we'll consider is shown schematically in Figure \ref{fig:ch9-ball}. I
 \setlength{\itemindent}{.2in}
 \item The ball is thrown from an initial height \(h\) (\(m\)).
 \item The ball is thrown with an initial speed \(s_{0}\) (\(ms^{-1}\)).
-\item The ball is thrown at an initial angle \(\phi\) with respect to the horizontal.
+\item The ball is thrown at an initial angle \(\phi\) with respect to the horizontal.\footnote{We'll ignore this until the very end and just consider 2 completely separate components of velocity.} 
 \end{enumerate}
 We'll neglect any air desistence or spin imparted to the ball, and for the purpose of calculating its height, we'll ignore its diameter, i.e. we'll consider that the ball is level with the ground when its centre is at height zero. Over and above this, you'll only need to know  gravitational  acceleration at the surface of Earth: \(g=9.81 ms^{-2}\) (i.e. the ball is being thrown on an Earth-like planet close to sealevel).
 
@@ -1619,7 +1617,11 @@ To simply things and the construction of the code and encapsulation of the physi
 \noindent\rule{4cm}{0.5pt}
 \vspace{-2mm}
 
-\begin{marginfigure}[3.0in]
+%------------------------------------------------
+\newpage
+%------------------------------------------------
+%
+\begin{marginfigure}[0.0in]
 \includegraphics[width=\linewidth]{ch9-schematic-ball_u.eps}
 \caption{Schematic of the code for simulating the horizontal movement of a ball.}
 \label{fig:ch9-schematic-ball_u}
@@ -1627,24 +1629,37 @@ To simply things and the construction of the code and encapsulation of the physi
 
 \newthought{\textit{\textbf{Part I }}} Start with a new \textsf{m-file} (which can be a simple \textit{script} file). For the structure of the code -- Figure \ref{fig:ch9-schematic-ball_u} is given as an example to guide you. 
 
-First, you are going to need to define a constant (\(g\)) -- the value for gravitational acceleration on Earth. (Here it is termed a 'constant', because its value never changes. The value of \(\pi\) would be another example, although \textbf{MATLAB} provides this as a function return.):
+First, you are going to define a couple of code sections that you will fill out (add to) later on. 
+
+\begin{enumerate}[noitemsep]
+
+\vspace{1mm}
+\item A section for model 'constants' -- a variable whose value is a fundamental physics property or one which is never changed.\sidenote[][0.5in]{The value of \(\pi\) would be an example of a 'constant'.}
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% model constants}\\
-g = 9.81; \textcolor[rgb]{0,0.501961,0}{\% gravitational acceleration (ms-2)}
 \end{docspec}
 
-Next, your program needs some parameters (the initial height \(h_{0}\), initial speed (\(s_{0}\)), initial angle (\(\theta\)) of the ball). (These are called parameters because they are invariant during the running of the program, but may be changed if the program is run again.):
+\vspace{1mm}
+\item A section for model 'parameters' -- a variable whose value is invariant during the running of the program, but may be changed if the program is run again.
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% model parameter values}\\
-h0 = 1.0;\\
-s0 = ...\\
-theta0 = ...;
 \end{docspec}
-(You might add comments for what the parameters are at the end of the line, and ideally include their units too.)
 
-For now, pick any 'reasonable' values for \(s_{0}\) \sidenote[][-0.0in]{On September 24, 2010, against the San Diego Padres, Chapman was clocked at 105.1 mph (169.1 km/h) -- the fastest pitch ever recorded in Major League Baseball. If you convert 169.1 km/h into units of \(ms^{-1}\), this will give you some reasonable upper limit for your initial  thrown velocity.} and \(\phi\) \sidenote{Obviously, the angle should lie between zero and 90 \degree  (or else the throw is going backwards and/or into the ground). BE CAREFUL as \textbf{MATLAB} assumes that angles are in units of \uline{radians}, so either work in units of radians throughout, or convert from degrees into radians when you calculate the velocity component based on the angle.} (and change the default zero values in the code). (Here, the initial height of the ball is assumed to be \(1m\), but you are free to make a different assumption.)
+\vspace{1mm}
+\item A section for model initial conditions (the initial value variables are set to).
+\begin{docspec}
+\textcolor[rgb]{0,0.501961,0}{\% model initial conditions}\\
+\end{docspec}
 
-Then, because you are going to use a time-stepping approach (rather than solving the system analytically), you are going to need to create a loop in time, starting at time zero. Can you guess the time-step you need? No? Then we need to make the time-step a \textit{parameter} that we can change later, to ensure that the system is solved well (i.e. accurately and without numerical instability). You could call this parameter e.g. \texttt{dt} (for \(dt\)) and set it\sidenote{In the parameter definition section of the code.} to an initial (guessed) value such as \(0.1s\). How long should you run the simulation for? This is also a sort of unknown at this point, at least until you have run the simulation a couple of times to get a feel for what the longest time the ball stays in the air might be. So why not pick \(10s\) to start with. Again, create a parameter to hold the value of the maximum model simulation time and assign its value in the parameter definition section of the code, e.g.:
+\vspace{1mm}
+\item And lastly ... the dreaded loop ...
+\begin{docspec}
+\textcolor[rgb]{0,0.501961,0}{\% loop in time}\\
+\end{docspec}
+
+\end{enumerate}
+
+For the loop -- because you are going to use a time-stepping approach (rather than solving the system analytically), you are going to need to create a loop in time, starting at time zero. Can you guess the time-step you need? No? Then we need to make the time-step a \textit{parameter} that we can change later, to ensure that the system is solved well (i.e. accurately and without numerical instability). You could call this parameter e.g. \texttt{dt} (for \(dt\)) and set it\sidenote{In the parameter definition section of the code.} to an initial (guessed) value such as \(0.1s\). How long should you run the simulation for? This is also a sort of unknown at this point, at least until you have run the simulation a couple of times to get a feel for what the longest time the ball stays in the air might be. So why not pick \(10s\) to start with. Again, create a parameter to hold the value of the maximum model simulation time and assign its value in the parameter definition section of the code, e.g.:
 \begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% model parameter values}\\
 ...\\
@@ -1653,6 +1668,10 @@ max\_t = 10.0
 \end{docspec}
 (Add comments for what the parameters are and ideally include their units ...)
 
+%------------------------------------------------
+\newpage
+%------------------------------------------------
+%
 Assuming a time-step parameter name of \texttt{dt} and a maximum time, \texttt{max\_t}, if your current time is called \texttt{t}, your loop structure will look like:
 \begin{docspec}
 \textcolor{blue}{for} t = 0:dt:max\_t
@@ -1665,23 +1684,23 @@ with time \texttt{t} starting at zero, and progressing to \texttt{max\_t} in ste
 \noindent\rule{4cm}{0.5pt}
 \vspace{2mm}
 
-\noindent What else do you need? You will need to know the horizontal component of the balls velocity.\sidenote[][-2.5in]{In the absence of air resistance, horizontal velocity does not actually change throughout the simulation (i.e. in each iteration of the loop, it will have the same value).}  You can calculate the (initial) horizontal component of velocity (\(u\)) from the given initial conditions of initial speed (\(s_{0})\) and initial angle of trajectory (\(\phi\))\sidenote[][-2.0in]{Just as long as you can remember how to calculate the sides of a right angled triangle given the length of the hypotenuse, which here is the speed. \\REMEMBER that \textbf{MATLAB} uses \textit{radians} for calculating with angles, not \textit{degrees}.} if you can recall your basic trigonometry 101 ... Because this variable (e.g. call it \texttt{u}) depends on parameter values defined at the top of the code, it needs to come after the parameter list, but before the loop starts. 
+\noindent What else do you need? You  need to know the horizontal  velocity of the ball.\sidenote[][-0.0in]{In the absence of air resistance, horizontal velocity does not actually change throughout the simulation (i.e. in each iteration of the loop, it will have the same value).} For now, assume this is \(10.0ms^{-1}\). You also need a variable to represent the horizontal position of the ball (delineated here in the text as \(p\), with units of \(m\)). This will start at zero and be updated within the loop. So also in the variable initial condition section,  define your initial value for the horizontal position variable \(p\) and assign it a (initial) value of zero.
 
-You also need a variable to represent the horizontal position of the ball (delineated here in the text as \(p\), with units of \(m\)). This will start at zero and be updated within the loop. So also in the variable initial condition section, why not define your horizontal position variable \(p\) and assign it a (initial) value of zero.
-
+\vspace{1mm}
 The complete section of initializing variables will look like:
-\begin{docspec}
+\vspace{-1mm}\begin{docspec}
 \textcolor[rgb]{0,0.501961,0}{\% model initial conditions}\\
-u = ...\\
+u = 10.0\\
 p = 0.0;
-\end{docspec}
-(here leaving the code for deriving \texttt{u} from \texttt{s0} and \texttt{theta0}, for you to work out ...).
+\end{docspec}\vspace{-1mm}
 
-Along with the schematic of the code structure, this should be all you need to create a basic code (but one at this point that does not actually 'do' anything). You should have 1 constant, and then 5 model \textit{parameters} defined representing: the initial height of the ball, the initial speed, and initial angle of throw, plus, maximum time and time step length. Then you should have 2 model variables: (horizontal) position \(p\), which you should have initialized to zero, and  (horizontal) velocity component \(u\), which you should have initialized calculated from \(s_{0}\) and \(\phi\). T\uline{here should be nothing in the loop so far}.
+Along with the schematic of the code structure, this should be all you need to create a basic code (but one at this point that does not actually 'do' anything). You should have 1 constant, and then 5 model \textit{parameters} defined representing: the initial height of the ball, the initial speed, and initial angle of throw, plus, maximum time and time step length. Then you should have 2 model variables: (horizontal) position \(p\), which you should have initialized to zero, and  (horizontal) velocity component \(u\). T\uline{here should be nothing in the loop so far}.
 
+\vspace{1mm}
 Check that it runs without error even though it is doing nothing useful! Add some debug (e.g. a line in the loop using \texttt{disp}) to check that the loop really does loop from zero to \texttt{max\_t} in steps of \texttt{dt}.\sidenote{Note that depending on whether or not \texttt{max\_t} is divisible by \texttt{dt} with no remainder, your loop might not exactly finish at a value for \texttt{a} of \texttt{dt}.}
 
-Now to add some code to the loop. During each time-step, i.e. each time around the loop, \(dt\) time (\(s\)) passes. (Pause ... and think about this.) In time \(dt\), if the horizontal velocity of the ball is \(u\), you should be able to calculate how far it moves, right?\sidenote{Distance = velocity times time: \\\(dp=u\times dt\)} You need to add this increment in distance travelled to the current value of the position variable \(p\)\sidenote{i.e. with code like 
+\vspace{1mm}
+Now to add some code to the loop. During each time-step, i.e. each time around the loop, \(dt\) time (in units of \(s\)) passes. (Pause ... and think about this.) In time \(dt\), if the horizontal velocity of the ball is \(u\), you should be able to calculate how far it moves, right?\sidenote{Distance = velocity times time: \\\(dp=u\times dt\), or in MATLAB-speak: \\\texttt{dp = u*dt}} You need to add this increment in distance travelled to the current value of the position variable \(p\)\sidenote{i.e. with code like 
 \begin{docspecmargin}
 p = p + dp;
 \end{docspecmargin} which you have seen endless times before now and should becoming wearily familiar ...}. Do this (calculating first the change in position, \texttt{dp}, and then updating the position variable, \texttt{p}). (Don't forget to read the margin notes!)
@@ -1704,6 +1723,10 @@ You should have a working model at this point, albeit only for the horizontal po
 \noindent\rule{4cm}{0.5pt}
 \vspace{-2mm}
 
+%------------------------------------------------
+\newpage
+%------------------------------------------------
+%
 \newthought{\textit{\textbf{Part II }}} Now for tracking the vertical position (and velocity) of the ball. Copy and rename your previous \textsf{m-file} -- use this as a starting point for the new model. You are going to modify your program so that \(p\) is now the vertical, not horizontal, position of the ball.
 
 \begin{marginfigure}[1.25in]
@@ -1712,9 +1735,20 @@ You should have a working model at this point, albeit only for the horizontal po
 \label{fig:ch9-schematic-ball_v}
 \end{marginfigure}
 
-Think about what is different about the physics of the system (Figure \ref{fig:ch9-ball}) from before -- this is going to directly inform how you adjust and add to the code. To start with, you should have noticed that the initial position (\(p_{(0)}\)) of the ball does not start at zero, but rather at height \(h_{0}\) (see Figure \ref{fig:ch9-ball}). This is one change to make in the code (i.e. having defined \(h_{0}\) as a parameter, you subsequently use \(h_{0}\) to set the initial value of \(p\)). Also -- the initial (vertical) velocity component, which we will call \(v\) (rather than \(u\) which we used for the horizontal velocity), is different from before. So go back to your triangle trigonometry,  and calculate of the initial vertical velocity component (\(v_{0}\)). Overall, the code structure looks like Figure \ref{fig:ch9-schematic-ball_v}.
+\vspace{1mm}
 
-You could, and indeed should, test the code so far. It should in fact do something very similar to before, with position \(p\) increasing, linearly, as a function of time (i.e. as the loop progresses in the number of iterations carried out). The only differences you should see are that \(p\) starts from value \(h_{0}\) and the rate at which \(p\) changes will be greater or less than before, depending on the value of \(\theta\) you assumed.\sidenote{What value of \(\theta\) would result in an \uline{identical} change in \(d\) with time (comparing the previous horizontal-only model with the new vertical (only) one)?}
+Think about what is different about the physics of the system (Figure \ref{fig:ch9-ball}) from before -- this is going to directly inform how you adjust and add to the code. To start with, you should have noticed that the initial vertical position (\(p_{(0)}\)) of the ball does not start at zero, but rather at height \(h_{0}\) (see Figure \ref{fig:ch9-ball}). So at the start of the program, create a section for 'model parameters'\footnote{These are called parameters because they are invariant during the running of the program, but may be changed if the program is run again.} and define a value for the variable \texttt{h0}:
+\vspace{-1mm}\begin{docspec}
+\textcolor[rgb]{0,0.501961,0}{\% model parameter values}\\
+h0 = 1.0;\\
+\end{docspec}\vspace{-1mm}
+(Here, it is assigned a value of \texttt{1.0}.)
+
+Then, under 'initial conditions', use \(h_{0}\) to set the initial value of \(p\)) (i.e. \texttt{p = h0;}). Also -- the initial (vertical) velocity component, which we will call \(v\) (rather than \(u\) which we used for the horizontal velocity), needs to be set. Again under 'intial conditions', set \(v\) to something 'reasonable' (try \(10.0\) (\(ms^{-1}\)) again?). Overall, the code structure looks like Figure \ref{fig:ch9-schematic-ball_v}.
+
+You could, and indeed should, test the code so far. It should in fact do something very similar to before, with position \(p\) increasing, linearly, as a function of time (i.e. as the loop progresses in the number of iterations carried out). The only difference you should see so far is that position, \(p\) starts from value \(h_{0}\) rather than zero.
+
+\vspace{1mm}
 
 So far so good. Except balls generally do not continue travelling vertically upwards for ever. You are missing gravity in this (vertical-only) model. Your variable for \(v\) (vertical velocity) now needs to change as a function of time and you'll need to update its value within the loop\sidenote{\uline{Before} or \uline{after} the updating the position? Actually, a slightly tricky question.}.
 
@@ -1724,10 +1758,16 @@ How are you going to update \(v\)? Well, the change in velocity with time is cal
 \end{docspec}
 where \(g\) is the acceleration due to gravity. Note the appearance of a minus sign in the equation if we are considering a coordinate system with distance upwards.
 
-So in the loop, calculate the change in velocity during the time-step, and then update the value of \(v\)\sidenote[][-0.0in]{Hint:
+In the code, you are going to need to define a constant (\(g\)) -- the value for gravitational acceleration on Earth:
+\begin{docspec}
+\textcolor[rgb]{0,0.501961,0}{\% model constants}\\
+g = 9.81; \textcolor[rgb]{0,0.501961,0}{\% gravitational acceleration (ms-2)}
+\end{docspec}
+
+Then in the loop, you are going to calculate the change in velocity during the time-step, and then update the value of \(v\)\sidenote[][-0.0in]{Hint:
 \begin{docspecmargin}
 \(v_{(t+1)}=v_{(t)}+\Delta v\)
-\end{docspecmargin} where \(v_{(t+1)}\) is the new (at the next time-step) velocity and  \(v_{(t)}\) the current velocity}.\sidenote{Note that in this example and as per Figure \ref{fig:ch9-schematic-ball_v}, we update the vertical position in the loop \uline{first} (at the start of the loop), and then update the velocity afterwards.} You should end up with 5 lines in the loop (excluding comments):
+\end{docspecmargin} where \(v_{(t+1)}\) is the new (at the next time-step) velocity and  \(v_{(t)}\) the current velocity} \sidenote{Note that in this example and as per Figure \ref{fig:ch9-schematic-ball_v}, we update the vertical position in the loop \uline{first} (at the start of the loop), and then update the velocity afterwards.}. You should end up with 5 lines within the loop (excluding comments):
 \begin{enumerate}[noitemsep]
 \setlength{\itemindent}{.2in}
 \item Calculate the change in position (\texttt{dp}), based on the current (vertical) velocity, \texttt{v} and the increment in time (\texttt{dt}).
@@ -1737,22 +1777,27 @@ So in the loop, calculate the change in velocity during the time-step, and then 
 \item Update velocity \texttt{v} based on the current value of velocity, plus the change in value (\texttt{dv}).
 \end{enumerate}
 
-Re-run the model ... what happens? Does this seem 'reasonable' (i.e. how the position changes as a function of time)?\sidenote{You might think about your own direct experience with throwing balls, as a reality check. i.e. have you ever thrown one that took a minute to come down, or one that hit the ground within 0.1s? If these sorts of things happen in the model, you may have a bug in there somewhere.} At this point you might consider whether you really do need to run the model for as long as \(10s\). Play about with the assumed initial angle and also the velocity and get a feel for what is the longest the ball lasts in the air (i.e. until its position becomes negative). 
+Re-run the model ... what happens? Does this seem 'reasonable' (i.e. how the position changes as a function of time)?\sidenote{You might think about your own direct experience with throwing balls, as a reality check. i.e. have you ever thrown one that took a minute to come down, or one that hit the ground within 0.1s? If these sorts of things happen in the model, you may have a bug in there somewhere.} At this point you might consider whether you really do need to run the model for as long as \(10s\). Play about with the assumed initial angle and also the velocity and get a feel for what is the longest the ball lasts in the air (i.e. until its position becomes negative).
 
 \vspace{1mm}
 \noindent\rule{4cm}{0.5pt}
 \vspace{-2mm}
 
+%------------------------------------------------
+\newpage
+%------------------------------------------------
+%
 \newthought{\textit{\textbf{Part III }}} By now, you should now have 2 working models (sperate \textbf{m-files}) -- one for the horizontal position of the ball, and one for the vertical position (and vertical velocity) of the ball. You now want to combine the 2 sperate parts of the model.\sidenote{I suggest basing the combined model on the vertical model (as it is the more complicated of the 2) and hence copying-and-renaming the 2nd script (i.e. so you end up with 3 different \textbf{m-files} in the end).}
 
+\vspace{1mm}
 How to merge? Mostly, the code content of the 2 individual models was  identical, but there is more in the vertical position model, so that would be the better one to copy and rename. Then what you need to copy across from the horizontal model and add in is:
-\begin{itemize}[noitemsep]
+\vspace{-1mm}\begin{itemize}[noitemsep]
 \setlength{\itemindent}{.2in}
-\item The calculation of the initial value of \(u\).
+\item The initialization of \(u\).
 \item The initialization of the horizontal position.
 \item The calculation of the change in horizontal position each time-step.
 \item The updating of the new horizontal position.
-\end{itemize}
+\end{itemize}\vspace{-1mm}
 
 By now, you should have noted a slight problem -- in both previous (sperate) models, the variable \(p\) was used to represent both the horizontal AND vertical position of the ball. \docenvdef{D'uh!}\marginnote{
 \docenvdef{duh}
@@ -1814,35 +1859,65 @@ You should end up with output, depending on how you constructed the string to be
 which is far far far from exciting ... but does at least confirm a constant change in horizontal position with time, and a vertical position that initially increases above the initial condition (\(h_{0}=1.0\)) but subsequently drops back and eventually falls below zero. And the time at which the vertical position reaches zero, is the value of \(d\) in  Figure \ref{fig:ch9-ball}.
 
 The very least we could do at this point is to detect when the ball has reached the ground and terminate the loop. I'll leave this code for you to devise, but you'll need:
-\begin{enumerate}[noitemsep]
+\vspace{-1mm}\begin{enumerate}[noitemsep]
 \setlength{\itemindent}{.2in}
 \item A conditional statement (\texttt{if ...}) to test whether the vertical position (\texttt{p(2)}) has dropped below zero. This would go in the loop just after the position of the ball has been updated, and  ...
 \item ... within the conditional, the \textbf{MATLAB} command to exit a loop, which you have seen before (look it up if you have forgotten!).
-\end{enumerate}
+\end{enumerate}\vspace{-1mm}
 
 Now you might note that when the ball reaches the ground (technically: its height falls below zero) and the loop exists, you may already be way below zero. In fact, if you are even the least little bit observant, you might note that the change in height per time-step at the end of the simulation is quite large (order meters) and hence it is unlikely you'll ever capture the moment that the ball is very close to the ground. Unless you shorten the time-step, that is. So play about with a shorter time-step (you only need change the value you assigned to the parameter representing \(\Delta t\) in the code). How short does it have to be in order to catch the moment the ball reaches the ground (passes zero) to within e.g. \(0.1 m\)?\sidenote{i.e. to have the loop terminate when the height is no more than \(-0.1 m\).} What about \(0.01 m\)? 
 
 In terms of how long the model takes to run and how many time-steps it uses -- is it even 'worth' finding when the ball hits the ground to an accuracy of \(0.01 m\)? What is the difference in the value of \(h\) you determine between different assumptions about the time-step? As you increase the length of the time-step, when does the value of \(d\) start to appreciably change (compared to assuming a very short time-step)? This is a measure of 'error' associated with the assumed time-step duration. Think about whether the error in \(d\) is 'meaningful' compared to \(d\) itself.
 
-\newthought{\textbf{\textcolor{red}{OPTIONAL}} -- Finally --} as an alternative to creating a \texttt{for} loop in which we pre-defined a maximum number of time-steps (or maximum time) and then  had to exit the loop once the ball reaches zero height about the ground, try re-writing the loop as a \texttt{while} loop, with the condition (for the loop to continue looping) that the ball has a height above the ground that is greater than zero. (This makes for a much neater solution to the problem.)
+\vspace{1mm}
+\noindent\rule{4cm}{0.5pt}
+\vspace{2mm}
+
+\noindent Lastly, if you refer to the figure of the system at the start of the section, you'll note that we are not assuming the 2 components of velocity separately (\(u\), \(v\)) but rather an initial speed (\(s_{0}\)) and an angle which the ball is thrown at (\(\phi\)). Add these to the model parameter section: 
+\begin{docspec}
+\textcolor[rgb]{0,0.501961,0}{\% model parameter values}\\
+s0 = ...\\
+phi0 = ...;
+\end{docspec}
+(Remember to add comments for what the parameters are at the end of the line, and ideally include their units too.)
+
+For now, pick any 'reasonable' values for \(s_{0}\) \sidenote[][-0.0in]{On September 24, 2010, against the San Diego Padres, Chapman was clocked at 105.1 mph (169.1 km/h) -- the fastest pitch ever recorded in Major League Baseball. If you convert 169.1 km/h into units of \(ms^{-1}\), this will give you some reasonable upper limit for your initial  thrown velocity.} and \(\phi\) \sidenote{Obviously, the angle should lie between zero and 90 \degree  (or else the throw is going backwards and/or into the ground). BE CAREFUL as \textbf{MATLAB} assumes that angles are in units of \uline{radians}, so either work in units of radians throughout, or convert from degrees into radians when you calculate the velocity component based on the angle.} (and change the default zero values in the code). (Here, the initial height of the ball is assumed to be \(1m\), but you are free to make a different assumption.)
+
+Then, you need to remember some basic trigonometry (shock/horror) ... and in the 'initial conditions' section, rather than assume the initial values of \(u\) and \(v\), instead calculate them from (\(s_{0}\)) and (\(\phi\)) (see figure):
+\vspace{-1mm}\begin{docspec}
+\textcolor[rgb]{0,0.501961,0}{\% model initial conditions}\\
+u = ... \textcolor[rgb]{0,0.501961,0}{\% (calculated from s0 and phi0)}\\
+v = ... \textcolor[rgb]{0,0.501961,0}{\% (calculated from s0 and phi0)};
+\end{docspec}\vspace{-1mm}
 
 \vspace{1mm}
 \noindent\rule{4cm}{0.5pt}
 \vspace{2mm}
 
+\vspace{-4mm}
+\newthought{\textbf{\textcolor{red}{OPTIONAL}} -- Finally --} as an alternative to creating a \texttt{for} loop in which we pre-defined a maximum number of time-steps (or maximum time) and then  had to exit the loop once the ball reaches zero height about the ground, try re-writing the loop as a \texttt{while} loop, with the condition (for the loop to continue looping) that the ball has a height above the ground that is greater than zero. (This makes for a much neater solution to the problem.)
+
+%\vspace{1mm}
+%\noindent\rule{4cm}{0.5pt}
+%\vspace{2mm}
+
+%------------------------------------------------
 \newpage
+%------------------------------------------------
 
 \newthought{\textit{\textbf{Part IV }}} Some graphics fun.
 
-It would be kinda fun (really) to show the ball 'flying through the air'. There are a variety of ways of doing this. We'll start with the simplest first and use \texttt{scatter}.
+\vspace{1mm}
+\noindent It would be kinda fun (really) to show the ball 'flying through the air'. There are a variety of ways of doing this. We'll start with the simplest first and use \texttt{scatter}.
 
 As a departure from previous plotting, we don't want to plot at the very end (after the loop)\sidenote{Although if you stored the position of the ball at each time-step, you could re-play the trajectory afterwards.} but rather, plot each position as it is calculated, within the loop.
 
 In the code -- open a new graphics figure window, before the loop starts, and set \texttt{hold on}, by adding the lines
-\begin{docspec}
+\vspace{-1mm}\begin{docspec}
+\textcolor[rgb]{0,0.501961,0}{\% create figure window}\\
 figure;
 \\hold on;
-\end{docspec}
+\end{docspec}\vspace{-1mm}
 
 Within the loop, you want to plot each \((x,y)\) position as it is calculated (\uline{after} the position has been updated, that is) by:
 \begin{docspec}
@@ -1850,7 +1925,8 @@ Within the loop, you want to plot each \((x,y)\) position as it is calculated (\
 \end{docspec}
 (feel free to add additional parameters to \texttt{scatter} to make the points smaller or larger, or filled, or whatever). Comment out any debug (\texttt{disp)} lines.
 
-Well, not so exciting. The plots sort of appears all at once and there is no sense of animation or of the ball moving. \textbf{MATLAB} is just way too fast for its own good\sidenote{This is a Trump-ism. In truth, \textbf{MATLAB} is about the slowest piece of *\$\&\% about.}.
+\vspace{1mm}
+Well ... not so exciting. The plots sort of appears all at once and there is no sense of animation or of the ball moving. \textbf{MATLAB} is just way too fast for its own good\sidenote{This is a Trump-ism. In truth, \textbf{MATLAB} is about the slowest piece of *\$\&\% about.}.
 
 You can make the loop proceed slower, by adding a time delay -- i.e. each time around the loop, \textbf{MATLAB} will take whatever time it needs to carry out the calculation and plot the current position PLUS whatever additional time you tell it to chill out for. The command is \docenvdef{pause} and you might initially try e.g.
 \begin{docspec}
@@ -1865,7 +1941,7 @@ which should insert a \(50 ms\) delay into the loop. Place this line just after 
 \\\texttt{pause(n)} will pause the execution of the code by \texttt{n} seconds.
 \end{mdframed}}
 
-Now it has all got really trippy. If you tell it no different, \texttt{MATLAB} insists on auto-scaling the (\(x\) and \(y\) limits of the) plot. As the position of the ball increases (initially) in \textit{y}-axis direction, and (constantly) along the \textit{x-axis} direction, \textbf{MATLAB} periodically re-scales the axes. Annoying. So before the loop starts and after you create the figure window, why not prescribe axes limits(?) Having played with the model you should have a reasonable idea for what the maximum vertical and horizontal distances are associated with 'reasonable' choices for the initial conditions (\(s_{0}\) and \(\theta\)).\sidenote[][-1.0in]{Don't forget the command for specifying a scale for the axis limits is \texttt{axis}.} You should end up with something like Figure \ref{fig:ch9-ball_uv} once the program has completed.
+Now it has all got really trippy. If you tell it no different, \textbf{MATLAB} insists on auto-scaling the (\(x\) and \(y\) limits of the) plot. As the position of the ball increases (initially) in \textit{y}-axis direction, and (constantly) along the \textit{x-axis} direction, \textbf{MATLAB} periodically re-scales the axes. Annoying. So before the loop starts and after you create the figure window, why not prescribe axes limits(?) Having played with the model you should have a reasonable idea for what the maximum vertical and horizontal distances are associated with 'reasonable' choices for the initial conditions (\(s_{0}\) and \(\theta\)).\sidenote[][-1.0in]{Don't forget the command for specifying a scale for the axis limits is \texttt{axis}.} You should end up with something like Figure \ref{fig:ch9-ball_uv} once the program has completed.
 
 \begin{marginfigure}[-0.5in]
 \includegraphics[width=\linewidth]{ch9-ball_uv.eps}
@@ -1873,14 +1949,22 @@ Now it has all got really trippy. If you tell it no different, \texttt{MATLAB} i
 \label{fig:ch9-ball_uv}
 \end{marginfigure}
 
-\newpage 
+%------------------------------------------------
+\newpage
+%------------------------------------------------
 
+\vspace{1mm}
+\noindent\rule{4cm}{0.5pt}
+\vspace{1mm}
+
+\vspace{-4mm}
 \newthought{\textbf{\textcolor{red}{OPTIONAL}} -- Also --} try turning your script into a \textit{function} so that you do not need to edit the values of \(s_{0}\) and \(\theta\) in the code, but pass them into the program as parameters instead (the \textit{function} needs not return anything however).
 
 \vspace{1mm}
 \noindent\rule{4cm}{0.5pt}
 \vspace{1mm}
 
+\vspace{-4mm}
 \newthought{\textbf{\textcolor{red}{OPTIONAL}}} -- Find out how far the same ball, through with the same initial speed and angle, travels on:
 \vspace{1mm}
 \begin{itemize}[noitemsep]
@@ -1888,6 +1972,7 @@ Now it has all got really trippy. If you tell it no different, \texttt{MATLAB} i
 \item Mecury -- \(g=3.7ms^{-2}\)
 \item The surface of a neutron star -- \(g=2.0 \times 10^{12}ms^{-2}\) \sidenote[][-0.5in]{You will need a MUCH\ MUCH shorter time-step ...}
 \end{itemize}
+\vspace{-4mm}
 
 \vspace{1mm}
 \noindent\rule{4cm}{0.5pt}
@@ -1908,10 +1993,8 @@ Now it has all got really trippy. If you tell it no different, \texttt{MATLAB} i
 \end{marginfigure}
 
 \vspace{1mm}
-\noindent\rule{4cm}{0.5pt}
-\vspace{2mm}
 
-\noindent You can also make more of an 'animation' out of the ball trajectory plotting. One trick would be to re-plot the position of the ball a second time, but now in white (hence covering up the previous drawing). Better is to ask \textbf{MATLAB} to delete the last ball object.
+You can also make more of an 'animation' out of the ball trajectory plotting. One trick would be to re-plot the position of the ball a second time, but now in white (hence covering up the previous drawing). Better is to ask \textbf{MATLAB} to delete the last ball object.
 
 When you call \texttt{scatter} as a function, a \textit{handle} is returned that is the ID of the points plotted. You can use this ID to delete the point! e.g. close all the currently open windows and try the following:
 \begin{docspec}
@@ -1947,6 +2030,10 @@ Now when the loop starts, there is a 'ball' to delete!
 \noindent\rule{4cm}{0.5pt}
 \vspace{-2mm}
 
+%------------------------------------------------
+\newpage
+%------------------------------------------------
+%
 \newthought{\textbf{\textcolor{red}{OPTIONAL}} -- A further refinement} would be to add a term to account for air resistance -- as the ball travels through the air, friction will act to decelerate the ball. 
 
 You could represent the effect of friction in a similar way to how you accounted for gravity, except (a) friction will affect both velocity components, and (ii) friction will act to decelerate the ball, regardless of its direction of travel (up or downwards). Friction also differs from gravitational acceleration in that the deceleration will not be constant, but instead a function of velocity. Furthermore, can assume that friction will scale with the square of the velocity (rather than linearly).
